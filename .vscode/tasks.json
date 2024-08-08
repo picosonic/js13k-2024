@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "echoCommand": true,
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "linux": { "command": "${workspaceFolder}/build.sh \"${workspaceFolder}\"" },
+            "windows": { "command": "${workspaceFolder}/build.bat \"${workspaceFolder}\"" },
+            "group": { "kind": "build", "isDefault": true }
+        },
+        {
+            "label": "Run in browser",
+            "type": "shell",
+            "linux": { "command": "${workspaceFolder}/build.sh \"${workspaceFolder}\" run" },
+            "windows": { "command": "${workspaceFolder}/build.bat \"${workspaceFolder}\" run" },
+            "group": { "kind": "test", "isDefault": true }
+        }
+    ]
+}
