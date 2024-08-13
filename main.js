@@ -6,20 +6,42 @@ const ymax=360;
 
 // Game state
 var gs={
+  // animation frame of reference
+  step:(1/60), // target step time @ 60 fps
+  acc:0, // accumulated time since last frame
+  lasttime:0, // time of last frame
+  fps:0, // current FPS
+  frametimes:[], // array of frame times
+
   // Canvas
   canvas:null,
-  ctx:null,
+  gl:null,
   scale:1,
+
+  ratio:(xmax/ymax),
+
+  // Game world
+  scene:{
+    // Background color (rgb)
+    b: { c: [.5, .5, .5] },
+    
+    // Camera position and rotation
+    c: {p: [3, -5, -10], r: [20, 10, 0]},
+    
+    // Diffuse light position and color
+    d: {p: [.5, -.3, -.7], c: [1, 1, 1]},
+    
+    // Ambient light color
+    a: {c: [0.3, 0.3, 0.2]},
+
+    // Objects to render (model, size, position, rotation, color)
+    o: [
+      {m: "cube", s: [1, 1, 1], p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
+    ]
+  },
 
   // Main character
   keystate:0,
-  x:0, // x position
-  y:0, // y position
-  vs:0, // vertical speed
-  hs:0, // horizontal speed
-  jump:false, // jumping
-  fall:false, // falling
-  dir:0, //direction (-1=left, 0=none, 1=right)
 
   debug:false
 };
@@ -135,6 +157,60 @@ function updatekeystate(e, dir)
   }
 }
 
+// Run an update step to the game state
+function update()
+{
+  gs.scene.o[0].r[0]+=0.2;
+  gs.scene.o[0].r[1]+=0.2;
+}
+
+// Redraw the game world
+function redraw()
+{
+  W.render(gs.scene, gs.gl, gs.ratio);
+
+  if (gs.debug)
+    document.title=gs.fps;
+}
+
+function rafcallback(timestamp)
+{
+  if (gs.debug)
+  {
+    // Calculate FPS
+    while ((gs.frametimes.length>0) && (gs.frametimes[0]<=(timestamp-1000)))
+      gs.frametimes.shift(); // Remove all entries older than a second
+
+    gs.frametimes.push(timestamp); // Add current time
+    gs.fps=gs.frametimes.length; // FPS = length of times in array
+  }
+
+  // First time round, just save epoch
+  if (gs.lasttime>0)
+  {
+    // Determine accumulated time since last call
+    gs.acc+=((timestamp-gs.lasttime) / 1000);
+
+    // If it's more than 15 seconds since last call, reset
+    if ((gs.acc>gs.step) && ((gs.acc/gs.step)>(60*15)))
+      gs.acc=gs.step*2;
+
+    // Process "steps" since last call
+    while (gs.acc>gs.step)
+    {
+      update();
+      gs.acc-=gs.step;
+    }
+
+    redraw();
+  }
+  
+  // Remember when we were last called
+  gs.lasttime=timestamp;
+
+  window.requestAnimationFrame(rafcallback);
+}
+
 // Entry point
 function init()
 {
@@ -160,11 +236,14 @@ function init()
 
   // Set up canvas
   gs.canvas=document.getElementById("canvas");
-  gs.ctx=gs.canvas.getContext("2d");
+  gs.gl=gs.canvas.getContext("webgl2");
 
   window.addEventListener("resize", function() { playfieldsize(); });
 
   playfieldsize();
+
+  // Start frame callbacks
+  window.requestAnimationFrame(rafcallback);
 }
 
 // Run the init() once page has loaded
