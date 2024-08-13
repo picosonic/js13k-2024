@@ -40,7 +40,7 @@ mkdir "${buildpath}"
 # Concatenate the JS files
 echo "Concatenating JS"
 touch "${jscat}" >/dev/null 2>&1
-for file in "main.js"
+for file in "w.js" "main.js"
 do
   cat "${file}" >> "${jscat}"
 done
