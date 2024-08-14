@@ -4,6 +4,13 @@
 const xmax=640;
 const ymax=360;
 
+const KEYNONE=0;
+const KEYLEFT=1;
+const KEYUP=2;
+const KEYRIGHT=4;
+const KEYDOWN=8;
+const KEYACTION=16;
+
 // Game state
 var gs={
   // animation frame of reference
@@ -35,13 +42,19 @@ var gs={
     a: {c: [0.3, 0.3, 0.2]},
 
     // Objects to render (model, size, position, rotation, color)
-    o: [
-      {m: "cube", s: [1, 1, 1], p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
-    ]
+    o: []
   },
 
   // Main character
   keystate:0,
+
+  // Models
+  models:[
+    {m: "cube", s: [1, 1, 1], p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
+    {m: "cube", s: [1, 1, 1], p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
+    {m: "cube", s: [1, 1, 1], p: [4, 0, 0], r: [0, 0, 0], c: [0.5, 1, 0]},
+    {m: "checkerboard", s: [1, 1, 1], p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]}
+  ],
 
   debug:false
 };
@@ -160,13 +173,31 @@ function updatekeystate(e, dir)
 // Run an update step to the game state
 function update()
 {
-  gs.scene.o[0].r[0]+=0.2;
-  gs.scene.o[0].r[1]+=0.2;
+  // spin first cube
+  gs.models[0].r[0]+=0.2;
+  gs.models[0].r[1]+=0.2;
+
+  // camera controls
+  if (ispressed(KEYLEFT))
+    gs.scene.c.p[0]+=0.1;
+
+  if (ispressed(KEYRIGHT))
+    gs.scene.c.p[0]-=0.1;
+
+  if (ispressed(KEYUP))
+    gs.scene.c.p[1]-=0.1;
+
+  if (ispressed(KEYDOWN))
+    gs.scene.c.p[1]+=0.1;
 }
 
 // Redraw the game world
 function redraw()
 {
+  gs.scene.o=[];
+  for(i of gs.models)
+    gs.scene.o.push(i);
+
   W.render(gs.scene, gs.gl, gs.ratio);
 
   if (gs.debug)
@@ -211,6 +242,43 @@ function rafcallback(timestamp)
   window.requestAnimationFrame(rafcallback);
 }
 
+// Load and generate 3D models
+function createobjects()
+{
+}
+
+function checkerboard()
+{
+  var vertices = [];
+  var uvs = [];
+
+  for (y=0; y<8; y++)
+  {
+    for (x=0; x<8; x++)
+    {
+      // vertices (x, y, z)
+      vertices.push(x*1); vertices.push(y*1); vertices.push(1);
+      vertices.push(x*-1); vertices.push(y*1); vertices.push(1);
+      vertices.push(x*-1); vertices.push(y*-1); vertices.push(1);
+
+      vertices.push(x*1); vertices.push(y*1); vertices.push(1);
+      vertices.push(x*-1); vertices.push(y*-1); vertices.push(1);
+      vertices.push(x*1); vertices.push(y*-1); vertices.push(1);
+
+      // uvs (u, v)
+      uvs.push(1); uvs.push(1);
+      uvs.push(0); uvs.push(1);
+      uvs.push(0); uvs.push(0);
+
+      uvs.push(1); uvs.push(1);
+      uvs.push(0); uvs.push(0);
+      uvs.push(1); uvs.push(0);
+    }
+  }
+
+  return ([vertices, uvs]);
+}
+
 // Entry point
 function init()
 {
@@ -241,6 +309,9 @@ function init()
   window.addEventListener("resize", function() { playfieldsize(); });
 
   playfieldsize();
+
+  // Import and generate 3D models
+  createobjects();
 
   // Start frame callbacks
   window.requestAnimationFrame(rafcallback);
