@@ -31,3 +31,17 @@ Looking into the [Triskaidekaphobia on Wikipedia](https://en.wikipedia.org/wiki/
 Padded out build environment and workflow.
 
 Did some tests with [xem's MicroW](https://xem.github.io/microW/) 3D engine.
+
+14th August
+-----------
+Had some issues commiting to GitHub, seems they were having issues.
+
+WebGL caused me some pain whilst debugging on FireFox, so switched to Google Chrome.
+
+Added camera movement from keyboard.
+
+Added more models to the scene, to look around.
+
+Tried procedural generation for chequerboard, ran into colour issue, where colour is applied to whole model, not per triangle.
+
+Reading through some more WebGL docs.
