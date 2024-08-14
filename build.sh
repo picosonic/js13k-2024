@@ -28,6 +28,8 @@ then
     curbrowser="firefox"
   fi
 
+  curbrowser="/opt/google/chrome/chrome"
+
   ${curbrowser} "index.html" >/dev/null 2>&1
   exit 0
 fi
