@@ -56,6 +56,10 @@ var gs={
     {m: "checkerboard", s: [1, 1, 1], p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]}
   ],
 
+  // Timeline for animation
+  timeline:new timelineobj(),
+
+  // Debug flag
   debug:false
 };
 
