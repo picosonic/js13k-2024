@@ -13,7 +13,7 @@ var W = {
     // Fragment shader
     gl.shaderSource(fs = gl.createShader(35632), `#version 300 es\nprecision lowp float;uniform vec3 c,d,a;in vec4 C,P,U;out vec4 o;uniform sampler2D s;void main(){float n=max(dot(d,-normalize(cross(dFdx(P.xyz),dFdy(P.xyz)))),0.);o=mix(texture(s,U.xy),vec4(c*C.rgb*n+a*C.rgb,1.),C.a);}`);
     gl.compileShader(fs);
-    //console.log('vertex shader:', gl.getShaderInfoLog(fs) || 'OK');
+    //console.log('fragment shader:', gl.getShaderInfoLog(fs) || 'OK');
 
     // Program
     program = gl.createProgram();
