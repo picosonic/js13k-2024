@@ -45,3 +45,9 @@ Added more models to the scene, to look around.
 Tried procedural generation for chequerboard, ran into colour issue, where colour is applied to whole model, not per triangle.
 
 Reading through some more WebGL docs.
+
+15th August
+-----------
+Moved inputs to separate file.
+
+Refactored input code using event.which to event.code, as which has been deprecated.
