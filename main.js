@@ -195,13 +195,13 @@ function update()
 function redraw()
 {
   gs.scene.o=[];
-  for(i of gs.models)
+  for(const i of gs.models)
     gs.scene.o.push(i);
 
   W.render(gs.scene, gs.gl, gs.ratio);
 
   if (gs.debug)
-    document.title=gs.fps;
+    document.title=""+gs.fps+" fps";
 }
 
 function rafcallback(timestamp)
@@ -252,9 +252,9 @@ function checkerboard()
   var vertices = [];
   var uvs = [];
 
-  for (y=0; y<8; y++)
+  for (var y=0; y<8; y++)
   {
-    for (x=0; x<8; x++)
+    for (var x=0; x<8; x++)
     {
       // vertices (x, y, z)
       vertices.push(x*1); vertices.push(y*1); vertices.push(1);
