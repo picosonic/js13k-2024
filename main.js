@@ -92,11 +92,11 @@ function playfieldsize()
 }
 
 // Advance object animations onwards
-function tween(percent)
+function tween(obj, percent)
 {
   // spin first cube
-  gs.models[0].r[0]+=0.2;
-  gs.models[0].r[1]+=0.2;
+  obj.r[0]+=0.2;
+  obj.r[1]+=0.2;
 }
 
 // Run an update step to the game state
@@ -171,7 +171,7 @@ function rafcallback(timestamp)
 function createobjects()
 {
   gs.models[0].anim=new timelineobj();
-  gs.models[0].anim.reset().add(10*1000, undefined).addcallback(tween).begin(0);
+  gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[0]).addcallback(tween).begin(0);
 }
 
 function checkerboard()

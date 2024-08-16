@@ -8,6 +8,7 @@ class timelineobj
     this.timelinepos=0; // Point in time of last update
     this.timelineepoch=0; // Epoch when timeline was started
     this.callback=null; // Optional callback on each timeline "tick"
+    this.obj=null; // Optional object association, passed to callback
     this.running=false; // Start in non-running state
     this.looped=0; // Completed iterations
     this.loop=1; // Number of times to loop, 0 means infinite
@@ -31,6 +32,15 @@ class timelineobj
   addcallback(item)
   {
     this.callback=item;
+
+    // Allow chaining
+    return this;
+  }
+
+  // Add an associated object
+  assoc(item)
+  {
+    this.obj=item;
 
     // Allow chaining
     return this;
@@ -73,9 +83,9 @@ class timelineobj
     {
       // If there's only a single undefined function on the timeline and it doesn't start at 0, then call with percentage
       if ((this.timeline.length==1) && (this.timeline[0].item==undefined) && (this.timeline[0].start>0))
-        this.callback((delta/this.timeline[0].start)*100);
+        this.callback(this.obj, (delta/this.timeline[0].start)*100);
       else
-        this.callback();
+        this.callback(this.obj);
     }
 
     // Record new timeline position
