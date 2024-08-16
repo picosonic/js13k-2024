@@ -56,7 +56,7 @@ var gs={
     {m: "checkerboard", s: [1, 1, 1], p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]}
   ],
 
-  // Timeline for animation
+  // Timeline for general animation
   timeline:new timelineobj(),
 
   // Debug flag
@@ -91,13 +91,17 @@ function playfieldsize()
   gs.canvas.style.transform='scale('+gs.scale+')';
 }
 
-// Run an update step to the game state
-function update()
+// Advance object animations onwards
+function tween(percent)
 {
   // spin first cube
   gs.models[0].r[0]+=0.2;
   gs.models[0].r[1]+=0.2;
+}
 
+// Run an update step to the game state
+function update()
+{
   // camera controls
   if (ispressed(KEYLEFT))
     gs.scene.c.p[0]+=0.1;
@@ -166,6 +170,8 @@ function rafcallback(timestamp)
 // Load and generate 3D models
 function createobjects()
 {
+  gs.models[0].anim=new timelineobj();
+  gs.models[0].anim.reset().add(10*1000, undefined).addcallback(tween).begin(0);
 }
 
 function checkerboard()
