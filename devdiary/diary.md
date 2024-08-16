@@ -51,3 +51,11 @@ Reading through some more WebGL docs.
 Moved inputs to separate file.
 
 Refactored input code using event.which to event.code, as which has been deprecated.
+
+16th August
+-----------
+Make use of timelines to test animation. Decided to add associated object to timeline callback, this should make it easier to apply changes.
+
+Made a cube roll around the grid when directed by user input. This was quite tricky until I realised then model is rotated in multiple axes, the rotation changes direction. Fixed it by resetting rotation when at target position.
+
+Made camera movement only linked to user input when in debug mode - press I to toggle.

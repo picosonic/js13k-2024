@@ -48,6 +48,11 @@ var gs={
   // Input
   keystate:KEYNONE,
 
+  // In motion
+  moving:KEYNONE, // Current moving direction
+  tp:[0, 0, 0], // Target position
+  tr:[0, 0, 0], // Target rotation
+
   // Models
   models:[
     {m: "cube", s: [1, 1, 1], p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
@@ -99,21 +104,135 @@ function tween(obj, percent)
   obj.r[1]+=0.2;
 }
 
+// When moving, step forwards until at target
+function movestep()
+{
+  var done=0;
+
+  // Do nothing if we're not moving
+  if (gs.moving==KEYNONE) return;
+
+  for (var i=0; i<3; i++)
+  {
+    // Position check
+    if (gs.models[1].p[i]<gs.tp[i])
+    {
+      gs.models[1].p[i]+=0.0444;
+
+      if (gs.models[1].p[i]>gs.tp[i])
+        gs.models[1].p[i]=gs.tp[i];
+    }
+    else
+    if (gs.models[1].p[i]>gs.tp[i])
+    {
+      gs.models[1].p[i]-=0.0444;
+
+      if (gs.models[1].p[i]<gs.tp[i])
+        gs.models[1].p[i]=gs.tp[i];
+    }
+    else
+      done++;
+
+    // Rotation check
+    if (gs.models[1].r[i]<gs.tr[i])
+    {
+      gs.models[1].r[i]+=2;
+
+      if (gs.models[1].r[i]>gs.tr[i])
+        gs.models[1].r[i]=gs.tr[i];
+    }
+    else
+    if (gs.models[1].r[i]>gs.tr[i])
+    {
+      gs.models[1].r[i]-=2;
+
+      if (gs.models[1].r[i]<gs.tr[i])
+        gs.models[1].r[i]=gs.tr[i];
+    }
+    else
+      done++;
+  }
+
+  // Detect end of movement (object at target)
+  if (done==6)
+  {
+    // Reset rotation
+    gs.models[1].r=[0, 0, 0];
+
+    gs.moving=KEYNONE;
+  }
+}
+
 // Run an update step to the game state
 function update()
 {
-  // camera controls
-  if (ispressed(KEYLEFT))
-    gs.scene.c.p[0]+=0.1;
+  if (!gs.debug)
+  {
+    // Check for a keypress when not already moving
+    if (gs.moving==KEYNONE)
+    {
+      if (ispressed(KEYLEFT))
+      {
+        gs.moving=KEYLEFT;
 
-  if (ispressed(KEYRIGHT))
-    gs.scene.c.p[0]-=0.1;
+        gs.tp=[].concat(gs.models[1].p);
+        gs.tp[0]-=2;
 
-  if (ispressed(KEYUP))
-    gs.scene.c.p[1]-=0.1;
+        gs.tr=[].concat(gs.models[1].r);
+        gs.tr[2]+=90;
+      }
+      else
+      if (ispressed(KEYRIGHT))
+      {
+        gs.moving=KEYRIGHT;
 
-  if (ispressed(KEYDOWN))
-    gs.scene.c.p[1]+=0.1;
+        gs.tp=[].concat(gs.models[1].p);
+        gs.tp[0]+=2;
+
+        gs.tr=[].concat(gs.models[1].r);
+        gs.tr[2]-=90;
+      }
+      else
+      if (ispressed(KEYUP))
+      {
+        gs.moving=KEYUP;
+
+        gs.tp=[].concat(gs.models[1].p);
+        gs.tp[2]-=2;
+
+        gs.tr=[].concat(gs.models[1].r);
+        gs.tr[0]-=90;
+      }
+      else
+      if (ispressed(KEYDOWN))
+      {
+        gs.moving=KEYDOWN;
+
+        gs.tp=[].concat(gs.models[1].p);
+        gs.tp[2]+=2;
+
+        gs.tr=[].concat(gs.models[1].r);
+        gs.tr[0]+=90;
+      }
+    }
+
+    movestep();
+  }
+  else
+  {
+    // camera controls
+    if (ispressed(KEYLEFT))
+      gs.scene.c.p[0]+=0.1;
+
+    if (ispressed(KEYRIGHT))
+      gs.scene.c.p[0]-=0.1;
+
+    if (ispressed(KEYUP))
+      gs.scene.c.p[1]-=0.1;
+
+    if (ispressed(KEYDOWN))
+      gs.scene.c.p[1]+=0.1;
+  }
 }
 
 // Redraw the game world
