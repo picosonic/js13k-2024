@@ -29,19 +29,23 @@ var gs={
 
   // Game world
   scene:{
-    // Background color (rgb)
-    b: { c: [.5, .5, .5] },
+    // Background color [r, g, b, a]
+    b: { c: [.5, .5, .5, 1] },
     
     // Camera position and rotation
-    c: {p: [3, -5, -10], r: [20, 10, 0]},
+    c:
+    {
+      p: [3, -5, -10], // [x, y, z]
+      r: [20, 10, 0]   // [pitch, yaw, roll]
+    },
     
-    // Diffuse light position and color
+    // Diffuse light [x, y, z] position and [r, g, b] color
     d: {p: [.5, -.3, -.7], c: [1, 1, 1]},
     
-    // Ambient light color
+    // Ambient light [r, g, b] color
     a: {c: [0.3, 0.3, 0.2]},
 
-    // Objects to render (model, size, position, rotation, color)
+    // Objects to render
     o: []
   },
 
@@ -50,10 +54,10 @@ var gs={
 
   // In motion
   moving:KEYNONE, // Current moving direction
-  tp:[0, 0, 0], // Target position
-  tr:[0, 0, 0], // Target rotation
+  tp:[0, 0, 0], // Target [x, y, z] position
+  tr:[0, 0, 0], // Target [pitch, yaw, roll] rotation
 
-  // Models
+  // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[
     {m: "cube", s: [1, 1, 1], p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
     {m: "cube", s: [1, 1, 1], p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},

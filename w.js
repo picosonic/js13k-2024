@@ -3,6 +3,9 @@
 
 var W = {
   render: (scene, gl, aspectratio, vs, fs, program, i, vertices, uv, modelMatrix, texture, a) => {
+    const black=[0, 0, 0, 0]; // [r, g, b, a]
+    const gl_false=0;
+    const gl_true=1;
 
     // Vertex shader
     gl.shaderSource(vs = gl.createShader(gl.VERTEX_SHADER), `#version 300 es\nprecision lowp float;in vec4 c,p,u;uniform mat4 M,m;out vec4 C,P,U;void main(){gl_Position=M*p;P=m*p;C=c;U=u;}`);
@@ -21,8 +24,8 @@ var W = {
     gl.linkProgram(program);
     gl.useProgram(program);
 
-    // Set the clear color and enable the depth test
-    gl.clearColor(...scene.b.c, 1);
+    // Set the clear color in RGBA and enable the depth test
+    gl.clearColor(...scene.b.c);
     gl.enable(gl.DEPTH_TEST);
 
     // Set the diffuse light color and direction
@@ -53,18 +56,18 @@ var W = {
       // Set position buffer
       gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-      gl.vertexAttribPointer(a=gl.getAttribLocation(program, 'p'), 3, gl.FLOAT, 0, 0, 0);
+      gl.vertexAttribPointer(a=gl.getAttribLocation(program, 'p'), 3, gl.FLOAT, gl_false, 0, 0);
       gl.enableVertexAttribArray(a);
       
       // Set uv buffer
       gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uv), gl.STATIC_DRAW);
-      gl.vertexAttribPointer(a=gl.getAttribLocation(program, 'u'), 2, gl.FLOAT, 0, 0, 0);
+      gl.vertexAttribPointer(a=gl.getAttribLocation(program, 'u'), 2, gl.FLOAT, gl_false, 0, 0);
       gl.enableVertexAttribArray(a);
       
       // Set the model matrix
       modelMatrix = new DOMMatrix().translate(...(i.p||[0,0,0])).rotate(...(i.r||[0,0,0])).scale(...(i.s||[1,1,1]));
-      gl.uniformMatrix4fv(gl.getUniformLocation(program, 'm'), 0, modelMatrix.toFloat32Array());
+      gl.uniformMatrix4fv(gl.getUniformLocation(program, 'm'), gl_false, modelMatrix.toFloat32Array());
       
       // Set the model's color
       if (i.c)
@@ -74,15 +77,16 @@ var W = {
       // or texture
       else
       {
-        gl.vertexAttrib4f(gl.getAttribLocation(program, 'c'), 0,0,0,0);
+        // Set a default base colour to black in RGBA
+        gl.vertexAttrib4f(gl.getAttribLocation(program, 'c'), ...black);
 
         if(i.t)
         {
           texture = gl.createTexture();
 
-          gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+          gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, gl_false);
           gl.bindTexture(gl.TEXTURE_2D, texture);
-          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, gl_false);
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE , i.t);
           gl.generateMipmap(gl.TEXTURE_2D);
           gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -92,8 +96,11 @@ var W = {
 
       // Set the cube's mvp matrix (camera x model)
       // Camera matrix (fov: 30deg, near: 0.1, far: 100)
-      gl.uniformMatrix4fv(gl.getUniformLocation(program, 'M'), 0, (new DOMMatrix([
-      1.8 / aspectratio, 0, 0, 0,  0, 1.8, 0, 0,  0, 0, -1.001, -1,  0, 0, -.2, 0
+      gl.uniformMatrix4fv(gl.getUniformLocation(program, 'M'), gl_false, (new DOMMatrix([
+        1.8 / aspectratio,   0,      0,  0, // m11 .. m14
+                        0, 1.8,      0,  0, // m21 .. m24
+                        0,   0, -1.001, -1, // m31 .. m34
+                        0,   0,    -.2,  0  // m41 .. m44
       ]).rotate(...scene.c.r)).translate(...scene.c.p).multiply(modelMatrix).toFloat32Array());
 
       // Render
