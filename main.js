@@ -48,6 +48,7 @@ var gs={
     // Objects to render
     o: []
   },
+  program:null, // Shader program
 
   // Input
   keystate:KEYNONE,
@@ -247,7 +248,7 @@ function redraw()
   for(const i of gs.models)
     gs.scene.o.push(i);
 
-  W.render(gs.scene, gs.gl, gs.ratio);
+  W.render(gs.scene, gs.gl, gs.ratio, gs.program);
 
   if (gs.debug)
     document.title=""+gs.fps+" fps";
@@ -357,12 +358,17 @@ function init()
   gs.canvas=document.getElementById("canvas");
   gs.gl=gs.canvas.getContext("webgl2");
 
+  // Set up handler for browser being resized (or re-oriented)
   window.addEventListener("resize", function() { playfieldsize(); });
 
+  // Initialise playfield size based on current browser attributes
   playfieldsize();
 
   // Import and generate 3D models
   createobjects();
+
+  // Initialise WebGL
+  gs.program=W.init(gs.scene, gs.gl);
 
   // Start frame callbacks
   window.requestAnimationFrame(rafcallback);
