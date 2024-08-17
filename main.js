@@ -77,7 +77,6 @@ var gs={
 function playfieldsize()
 {
   var height=window.innerHeight;
-  var aspectratio=xmax/ymax;
   var ratio=xmax/ymax;
   var width=Math.floor(height*ratio);
   var top=0;
@@ -302,20 +301,28 @@ function createobjects()
 function checkerboard()
 {
   var vertices = [];
+  var faces = [];
+  var colours = [];
   var uvs = [];
+  var alt = 0;
+  var v = 0; // Current vertex
 
   for (var y=0; y<8; y++)
   {
     for (var x=0; x<8; x++)
     {
       // vertices (x, y, z)
-      vertices.push(x*1); vertices.push(y*1); vertices.push(1);
-      vertices.push(x*-1); vertices.push(y*1); vertices.push(1);
-      vertices.push(x*-1); vertices.push(y*-1); vertices.push(1);
+      vertices.push([ x*1,  y*1, 1]); v++; // 1
+      vertices.push([x*-1,  y*1, 1]); v++; // 2
+      vertices.push([x*-1, y*-1, 1]); v++; // 3
+      vertices.push([ x*1, y*-1, 1]); v++; // 4
 
-      vertices.push(x*1); vertices.push(y*1); vertices.push(1);
-      vertices.push(x*-1); vertices.push(y*-1); vertices.push(1);
-      vertices.push(x*1); vertices.push(y*-1); vertices.push(1);
+      // faces
+      faces.push([v-3, v-2, v-1]);
+      faces.push([v-3, v-1, v]);
+
+      // colours
+      colours.push(7+((alt++)&1)); // alternating black and white
 
       // uvs (u, v)
       uvs.push(1); uvs.push(1);
@@ -328,7 +335,7 @@ function checkerboard()
     }
   }
 
-  return ([vertices, uvs]);
+  return ([vertices, faces, colours, uvs]);
 }
 
 // Entry point

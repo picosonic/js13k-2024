@@ -1,6 +1,26 @@
 // Thanks to xem
 //   https://xem.github.io/microW/
 
+// OpenGL default palette
+const palette = [
+  [0.4, 0.4, 0.4], // 0 "darkgrey"
+  [  1,   0,   0], // 1 "red"
+  [  0,   1,   0], // 2 "green"
+  [  0,   0,   1], // 3 "blue"
+  [  0,   1,   1], // 4 "cyan"
+  [  1,   0,   1], // 5 "magenta"
+  [  1,   1,   0], // 6 "yellow"
+  [  1,   1,   1], // 7 "white"
+  [  0,   0,   0], // 8 "black"
+  [0.5,   0,   0], // 9 "darkred"
+  [  0, 0.5,   0], // 10 "darkgreen"
+  [  0,   0, 0.5], // 11 "darkblue"
+  [  0, 0.5, 0.5], // 12 "darkcyan"
+  [0.5,   0, 0.5], // 13 "darkmagenta"
+  [0.5, 0.5,   0], // 14 "darkyellow"
+  [0.8, 0.8, 0.8]  // 15 "lightgrey"
+];
+
 var W = {
   init: (scene, gl) => {
     var vs, fs;
@@ -63,40 +83,47 @@ var W = {
     // Set the ambient light color
     gl.uniform3f(gl.getUniformLocation(program, 'a'), ...scene.a.c);
 
+    // Default blending method for transparent objects
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+
+    // Enable texture 0
+    gl.activeTexture(gl.TEXTURE0);
+
     return program;
   },
 
   render: (scene, gl, aspectratio, program) => {
     const black=[0, 0, 0, 0]; // [r, g, b, a]
-    var i, vertices, uv, modelMatrix, texture, a;
+    var i, j, vertices, faces, colours, uvs, modelMatrix, texture, a;
+    var allvertices=[];
 
-    // Clear
+    // Clear before drawing
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Render each object
     for(i of scene.o)
-    {  
-      // Default blending method for transparent objects
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      
-      // Enable texture 0
-      gl.activeTexture(gl.TEXTURE0);
-      
+    {    
       // Initialize the model (cube by default)
-      [vertices, uv] = (window[i.m] || cube)();
+      [vertices, faces, colours, uvs] = (window[i.m] || cube)();
 
-      // Alpha-blending
-      gl.enable(gl.BLEND);
+      // Translate faces
+      for (j of faces)
+      {
+        allvertices.push(...vertices[(j[0])-1]);
+        allvertices.push(...vertices[(j[1])-1]);
+        allvertices.push(...vertices[(j[2])-1]);
+      }
 
       // Set position buffer
       gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allvertices), gl.STATIC_DRAW);
       gl.vertexAttribPointer(a=gl.getAttribLocation(program, 'p'), 3, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(a);
       
       // Set uv buffer
       gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uv), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
       gl.vertexAttribPointer(a=gl.getAttribLocation(program, 'u'), 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(a);
       
@@ -140,39 +167,67 @@ var W = {
 
       // Render
       // (Special case for plane: render the front face of a cube)
-      gl.drawArrays(gl.TRIANGLES, 0, i.m == "plane" ? 6 : vertices.length / 3);
+      gl.drawArrays(gl.TRIANGLES, 0, i.m == "plane" ? 6 : allvertices.length / 3);
     }
   }
 }
 
 // Declare a cube (2x2x2)
-// Returns [vertices, uvs)] 
+// Returns [vertices, faces, colours, uvs)] 
 //
-//    v6----- v5
+//    v7----- v6
 //   /|      /|
-//  v1------v0|
+//  v2------v1|
 //  | |   x | |
-//  | |v7---|-|v4
+//  | |v8---|-|v5
 //  |/      |/
-//  v2------v3
+//  v3------v4
 
-var cube = () => [
-
+const cube = () => [
+  // vertices
   [
-    1, 1, 1,  -1, 1, 1,  -1,-1, 1, // front
-    1, 1, 1,  -1,-1, 1,   1,-1, 1,
-    1, 1,-1,   1, 1, 1,   1,-1, 1, // right
-    1, 1,-1,   1,-1, 1,   1,-1,-1,
-    1, 1,-1,  -1, 1,-1,  -1, 1, 1, // up
-    1, 1,-1,  -1, 1, 1,   1, 1, 1,
-   -1, 1, 1,  -1, 1,-1,  -1,-1,-1, // left
-   -1, 1, 1,  -1,-1,-1,  -1,-1, 1,
-   -1, 1,-1,   1, 1,-1,   1,-1,-1, // back
-   -1, 1,-1,   1,-1,-1,  -1,-1,-1,
-    1,-1, 1,  -1,-1, 1,  -1,-1,-1, // down
-    1,-1, 1,  -1,-1,-1,   1,-1,-1
+    [ 1,  1,  1],
+    [-1,  1,  1],
+    [-1, -1,  1],
+    [ 1, -1,  1],
+    [ 1, -1, -1],
+    [ 1,  1, -1],
+    [-1,  1, -1],
+    [-1, -1, -1],    
   ],
-  
+
+  // faces
+  [
+    [1, 2, 3], // front
+    [1, 3, 4],
+
+    [6, 1, 4], // right
+    [6, 4, 5],
+
+    [6, 7, 2], // up
+    [6, 2, 1],
+
+    [2, 7, 8], // left
+    [2, 8, 3],
+
+    [7, 6, 5], // back
+    [7, 5, 8],
+
+    [4, 3, 8], // down
+    [4, 8, 5]
+  ],
+
+  // colours (index to palette)
+  [
+    7,
+    1,
+    2,
+    3,
+    6,
+    5
+  ],
+
+  // uvs
   [
     1, 1,   0, 1,   0, 0, // front
     1, 1,   0, 0,   1, 0,            

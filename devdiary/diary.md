@@ -59,3 +59,13 @@ Make use of timelines to test animation. Decided to add associated object to tim
 Made a cube roll around the grid when directed by user input. This was quite tricky until I realised then model is rotated in multiple axes, the rotation changes direction. Fixed it by resetting rotation when at target position.
 
 Made camera movement only linked to user input when in debug mode - press I to toggle.
+
+17th August
+-----------
+Been staring at the WebGL code a lot and not really knowing what some parts meant. So have made small changes, refactored and added tons more comments based on a nice step-by-step [WebGL tutorial](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial).
+
+The WebGL tutorial I found suggests that steps can be split out into init and a render parts. So you don't need to do all the setup for each frame that's rendered. So I split some of the WebGL code out into these two parts. Might have a slight performance improvement.
+
+Decided to refactor WebGL code to be closer to what I've done before in terms of 3D models, so added an "OpenGL default palette" for per-face colouring, convert vertices/faces notation into pure vertices. Also refactored the built in "cube" model, and my chequerboard function.
+
+This refactoring is also with a view towards switching from gl.drawArrays to gl.drawElements which is meant to be more efficient.
