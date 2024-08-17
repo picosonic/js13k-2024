@@ -112,6 +112,7 @@ function movestep()
   // Do nothing if we're not moving
   if (gs.moving==KEYNONE) return;
 
+  // Iterate through x, y, z for position and rotation
   for (var i=0; i<3; i++)
   {
     // Position check
