@@ -61,10 +61,10 @@ var gs={
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[
     {m: cube(), s: [1, 1, 1], p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
-    {m: cube(), s: [1, 1, 1], p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
+    {m: loadmodel("coriolis"), s: [1, 1, 1], p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
     {m: cube(), s: [1, 1, 1], p: [4, 0, 0], r: [0, 0, 0], c: [0.5, 1, 0]},
     {m: checkerboard(), s: [1, 1, 1], p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]},
-    {m: loadmodel("coriolis"), s: [2, 2, 2], p: [0, 4, -5], r: [0, 0, 0], c: [1, 0, 0.5]},
+    {m: loadmodel("stealth"), s: [0.005, 0.005, 0.005], p: [0, 4, -5], r: [0, 0, 0], c: [1, 0, 0.5]},
   ],
 
   // Timeline for general animation
@@ -301,11 +301,11 @@ function loadmodel(name)
     {
       var faces=JSON.parse(JSON.stringify(i.f));
 
-      for (j of faces)
+      for (var j in faces)
       {
-        j[0]--;
-        j[1]--;
-        j[2]--;
+        faces[j][0]--;
+        faces[j][1]--;
+        faces[j][2]--;
       }
 
       return ([i.v, faces, i.c]);
