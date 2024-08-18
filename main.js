@@ -60,10 +60,11 @@ var gs={
 
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[
-    {m: "cube", s: [1, 1, 1], p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
-    {m: "cube", s: [1, 1, 1], p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
-    {m: "cube", s: [1, 1, 1], p: [4, 0, 0], r: [0, 0, 0], c: [0.5, 1, 0]},
-    {m: "checkerboard", s: [1, 1, 1], p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]}
+    {m: cube(), s: [1, 1, 1], p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
+    {m: cube(), s: [1, 1, 1], p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
+    {m: cube(), s: [1, 1, 1], p: [4, 0, 0], r: [0, 0, 0], c: [0.5, 1, 0]},
+    {m: checkerboard(), s: [1, 1, 1], p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]},
+    {m: loadmodel("coriolis"), s: [2, 2, 2], p: [0, 4, -5], r: [0, 0, 0], c: [1, 0, 0.5]},
   ],
 
   // Timeline for general animation
@@ -103,7 +104,7 @@ function playfieldsize()
 // Advance object animations onwards
 function tween(obj, percent)
 {
-  // spin first cube
+  // spin model
   obj.r[0]+=0.2;
   obj.r[1]+=0.2;
 }
@@ -233,10 +234,10 @@ function update()
       gs.scene.c.p[0]-=0.1;
 
     if (ispressed(KEYUP))
-      gs.scene.c.p[1]-=0.1;
+      gs.scene.c.p[2]+=0.1;
 
     if (ispressed(KEYDOWN))
-      gs.scene.c.p[1]+=0.1;
+      gs.scene.c.p[2]-=0.1;
   }
 }
 
@@ -291,11 +292,34 @@ function rafcallback(timestamp)
   window.requestAnimationFrame(rafcallback);
 }
 
+// Convert a model from JSON format
+function loadmodel(name)
+{
+  for (var i of models)
+  {
+    if (i.t==name)
+    {
+      var faces=JSON.parse(JSON.stringify(i.f));
+
+      for (j of faces)
+      {
+        j[0]--;
+        j[1]--;
+        j[2]--;
+      }
+
+      return ([i.v, faces, i.c]);
+    }
+  }
+
+  return cube();
+}
+
 // Load and generate 3D models
 function createobjects()
 {
   gs.models[0].anim=new timelineobj();
-  gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[0]).addcallback(tween).begin(0);
+  gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[4]).addcallback(tween).begin(0);
 }
 
 function checkerboard()
@@ -303,7 +327,6 @@ function checkerboard()
   var vertices = [];
   var faces = [];
   var colours = [];
-  var uvs = [];
   var alt = 0;
   var v = 0; // Current vertex
 
@@ -312,30 +335,21 @@ function checkerboard()
     for (var x=0; x<8; x++)
     {
       // vertices (x, y, z)
-      vertices.push([ x*1,  y*1, 1]); v++; // 1
-      vertices.push([x*-1,  y*1, 1]); v++; // 2
-      vertices.push([x*-1, y*-1, 1]); v++; // 3
-      vertices.push([ x*1, y*-1, 1]); v++; // 4
+      vertices.push([ x*1,  y*1, 1]); v++;
+      vertices.push([x*-1,  y*1, 1]); v++;
+      vertices.push([x*-1, y*-1, 1]); v++;
+      vertices.push([ x*1, y*-1, 1]); v++;
 
       // faces
-      faces.push([v-3, v-2, v-1]);
-      faces.push([v-3, v-1, v]);
+      faces.push([v-4, v-3, v-2]);
+      faces.push([v-4, v-2, v-1]);
 
       // colours
       colours.push(7+((alt++)&1)); // alternating black and white
-
-      // uvs (u, v)
-      uvs.push(1); uvs.push(1);
-      uvs.push(0); uvs.push(1);
-      uvs.push(0); uvs.push(0);
-
-      uvs.push(1); uvs.push(1);
-      uvs.push(0); uvs.push(0);
-      uvs.push(1); uvs.push(0);
     }
   }
 
-  return ([vertices, faces, colours, uvs]);
+  return ([vertices, faces, colours]);
 }
 
 // Entry point

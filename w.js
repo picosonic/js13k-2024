@@ -95,7 +95,7 @@ var W = {
 
   render: (scene, gl, aspectratio, program) => {
     const black=[0, 0, 0, 0]; // [r, g, b, a]
-    var i, j, vertices, faces, colours, uvs, modelMatrix, texture, a;
+    var i, j, vertices, faces, colours, modelMatrix, texture, a;
     var allvertices=[];
 
     // Clear before drawing
@@ -105,26 +105,23 @@ var W = {
     for(i of scene.o)
     {    
       // Initialize the model (cube by default)
-      [vertices, faces, colours, uvs] = (window[i.m] || cube)();
+      [vertices, faces, colours] = (i.m || cube());
+
+      // Clear for current model 
+      allvertices=[];
 
       // Translate faces
       for (j of faces)
       {
-        allvertices.push(...vertices[(j[0])-1]);
-        allvertices.push(...vertices[(j[1])-1]);
-        allvertices.push(...vertices[(j[2])-1]);
+        allvertices.push(...vertices[j[0]]);
+        allvertices.push(...vertices[j[1]]);
+        allvertices.push(...vertices[j[2]]);
       }
 
       // Set position buffer
       gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allvertices), gl.STATIC_DRAW);
       gl.vertexAttribPointer(a=gl.getAttribLocation(program, 'p'), 3, gl.FLOAT, false, 0, 0);
-      gl.enableVertexAttribArray(a);
-      
-      // Set uv buffer
-      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
-      gl.vertexAttribPointer(a=gl.getAttribLocation(program, 'u'), 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(a);
       
       // Set the model matrix
@@ -136,24 +133,10 @@ var W = {
       {
         gl.vertexAttrib3f(gl.getAttribLocation(program, 'c'), ...i.c);
       }
-      // or texture
       else
       {
         // Set a default base colour to black in RGBA
         gl.vertexAttrib4f(gl.getAttribLocation(program, 'c'), ...black);
-
-        if(i.t)
-        {
-          texture = gl.createTexture();
-
-          gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-          gl.bindTexture(gl.TEXTURE_2D, texture);
-          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE , i.t);
-          gl.generateMipmap(gl.TEXTURE_2D);
-          gl.bindTexture(gl.TEXTURE_2D, texture);
-          gl.uniform1i(gl.getUniformLocation(program, 's'), 0);
-        }
       }
 
       // Set the cube's mvp matrix (camera x model)
@@ -167,79 +150,66 @@ var W = {
 
       // Render
       // (Special case for plane: render the front face of a cube)
-      gl.drawArrays(gl.TRIANGLES, 0, i.m == "plane" ? 6 : allvertices.length / 3);
+      gl.drawArrays(gl.TRIANGLES, 0, allvertices.length / 3);
     }
   }
 }
 
 // Declare a cube (2x2x2)
-// Returns [vertices, faces, colours, uvs)] 
+// Returns [vertices, faces, colours)] 
 //
-//    v7----- v6
+//    v6----- v5
 //   /|      /|
-//  v2------v1|
+//  v1------v0|
 //  | |   x | |
-//  | |v8---|-|v5
+//  | |v7---|-|v4
 //  |/      |/
-//  v3------v4
+//  v2------v3
 
-const cube = () => [
+function cube()
+{
+  return [
   // vertices
   [
-    [ 1,  1,  1],
-    [-1,  1,  1],
-    [-1, -1,  1],
-    [ 1, -1,  1],
-    [ 1, -1, -1],
-    [ 1,  1, -1],
-    [-1,  1, -1],
-    [-1, -1, -1],    
+    [ 1,  1,  1], // v0 t/r front
+    [-1,  1,  1], // v1 t/l front
+    [-1, -1,  1], // v2 b/l front
+    [ 1, -1,  1], // v3 b/r front
+    [ 1, -1, -1], // v4 b/r back
+    [ 1,  1, -1], // v5 t/r back
+    [-1,  1, -1], // v6 t/l back
+    [-1, -1, -1]  // v7 b/l back
   ],
 
   // faces
   [
-    [1, 2, 3], // front
-    [1, 3, 4],
+    [0, 1, 2], // front
+    [0, 2, 3],
 
-    [6, 1, 4], // right
-    [6, 4, 5],
+    [5, 0, 3], // right
+    [5, 3, 4],
 
-    [6, 7, 2], // up
-    [6, 2, 1],
+    [5, 6, 1], // up
+    [5, 1, 0],
 
-    [2, 7, 8], // left
-    [2, 8, 3],
+    [1, 6, 7], // left
+    [1, 7, 2],
 
-    [7, 6, 5], // back
-    [7, 5, 8],
+    [6, 5, 4], // back
+    [6, 4, 7],
 
-    [4, 3, 8], // down
-    [4, 8, 5]
+    [3, 2, 7], // down
+    [3, 7, 4]
   ],
 
   // colours (index to palette)
   [
-    7,
-    1,
-    2,
-    3,
-    6,
-    5
-  ],
-
-  // uvs
-  [
-    1, 1,   0, 1,   0, 0, // front
-    1, 1,   0, 0,   1, 0,            
-    1, 1,   0, 1,   0, 0, // right
-    1, 1,   0, 0,   1, 0, 
-    1, 1,   0, 1,   0, 0, // up
-    1, 1,   0, 0,   1, 0,
-    1, 1,   0, 1,   0, 0, // left
-    1, 1,   0, 0,   1, 0,
-    1, 1,   0, 1,   0, 0, // back
-    1, 1,   0, 0,   1, 0,
-    1, 1,   0, 1,   0, 0, // down
-    1, 1,   0, 0,   1, 0
+    7, // white
+    1, // red
+    2, // green
+    3, // blue
+    6, // yellow
+    5  // magenta
   ]
 ];
+}

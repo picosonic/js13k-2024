@@ -69,3 +69,13 @@ The WebGL tutorial I found suggests that steps can be split out into init and a 
 Decided to refactor WebGL code to be closer to what I've done before in terms of 3D models, so added an "OpenGL default palette" for per-face colouring, convert vertices/faces notation into pure vertices. Also refactored the built in "cube" model, and my chequerboard function.
 
 This refactoring is also with a view towards switching from gl.drawArrays to gl.drawElements which is meant to be more efficient.
+
+18th August
+-----------
+Noticed some odd behaviour with the 3D model rendering, namely the chequerboard had a cube underneath it, and when I tried adding new models they always rendered as a cube unless I had placed them as the first object to render. The issue turned out to be that I was only clearing the vertex buffer once per frame instead of per-object.
+
+Also noticed that rendering was different between Firefox and Chrome, and the minified version also looked different. This seemed to be an issue with uv texture mapping, so decided for now that I won't use this and removed all the uv and texture code.
+
+The way objects were associated with models seemed to break when minified, so I changed it to run the function to generate the model rather than store the name for the function as a string.
+
+Added a custom loader which can import 3D models in a JSON format that I've used previously.
