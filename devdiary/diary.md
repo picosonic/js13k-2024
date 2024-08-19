@@ -79,3 +79,7 @@ Also noticed that rendering was different between Firefox and Chrome, and the mi
 The way objects were associated with models seemed to break when minified, so I changed it to run the function to generate the model rather than store the name for the function as a string.
 
 Added a custom loader which can import 3D models in a JSON format that I've used previously.
+
+19th August
+-----------
+Added 3D fps style movement to the camera when in debug mode.

@@ -3,6 +3,7 @@
 // Global constants
 const xmax=640;
 const ymax=360;
+const PIOVER180=(Math.PI/180);
 
 const KEYNONE=0;
 const KEYLEFT=1;
@@ -228,16 +229,29 @@ function update()
   {
     // camera controls
     if (ispressed(KEYLEFT))
-      gs.scene.c.p[0]+=0.1;
+      gs.scene.c.r[1]-=1;
 
     if (ispressed(KEYRIGHT))
-      gs.scene.c.p[0]-=0.1;
+      gs.scene.c.r[1]+=1;
 
     if (ispressed(KEYUP))
-      gs.scene.c.p[2]+=0.1;
+    {
+      gs.scene.c.p[0]-=(0.1*Math.sin(gs.scene.c.r[1]*PIOVER180));
+      gs.scene.c.p[2]+=(0.1*Math.cos(gs.scene.c.r[1]*PIOVER180));
+    }
 
     if (ispressed(KEYDOWN))
-      gs.scene.c.p[2]-=0.1;
+    {
+      gs.scene.c.p[0]+=(0.1*Math.sin(gs.scene.c.r[1]*PIOVER180));
+      gs.scene.c.p[2]-=(0.1*Math.cos(gs.scene.c.r[1]*PIOVER180));
+    }
+
+    // prevent angle over/underflow
+    for (var vector=0; vector<3; vector++)
+    {
+      if (gs.scene.c.r[vector]<0) gs.scene.c.r[vector]+=360;
+      if (gs.scene.c.r[vector]>=360) gs.scene.c.r[vector]-=360;
+    }
   }
 }
 
