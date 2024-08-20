@@ -7,8 +7,8 @@ class timelineobj
     this.timeline=[]; // Array of actions
     this.timelinepos=0; // Point in time of last update
     this.timelineepoch=0; // Epoch when timeline was started
-    this.callback=null; // Optional callback on each timeline "tick"
-    this.obj=null; // Optional object association, passed to callback
+    this.callbacks=[]; // Optional callbacks on each timeline "tick"
+    this.objs=[]; // Optional associated objects, passed to callbacks
     this.running=false; // Start in non-running state
     this.looped=0; // Completed iterations
     this.loop=1; // Number of times to loop, 0 means infinite
@@ -31,7 +31,7 @@ class timelineobj
   // Add a timeline callback
   addcallback(item)
   {
-    this.callback=item;
+    this.callbacks.push(item);
 
     // Allow chaining
     return this;
@@ -40,7 +40,7 @@ class timelineobj
   // Add an associated object
   assoc(item)
   {
-    this.obj=item;
+    this.objs.push(item);
 
     // Allow chaining
     return this;
@@ -79,13 +79,17 @@ class timelineobj
     }
 
     // If a callback was requested, then call it
-    if (this.callback!=null)
+    if (this.callbacks.length>0)
     {
       // If there's only a single undefined function on the timeline and it doesn't start at 0, then call with percentage
       if ((this.timeline.length==1) && (this.timeline[0].item==undefined) && (this.timeline[0].start>0))
-        this.callback(this.obj, (delta/this.timeline[0].start)*100);
+        this.callbacks.forEach((callback) => {
+          this.objs.forEach((obj) => callback(obj, (delta/this.timeline[0].start)*100));
+        });
       else
-        this.callback(this.obj);
+        this.callbacks.forEach((callback) => {
+          this.objs.forEach((obj) => callback(obj));
+        });
     }
 
     // Record new timeline position
@@ -148,7 +152,8 @@ class timelineobj
     this.timeline=[]; // Array of actions
     this.timelinepos=0; // Point in time of last update
     this.timelineepoch=0; // Epoch when timeline was started
-    this.callback=null; // Optional callback on each timeline "tick"
+    this.callbacks=[]; // Optional callback on each timeline "tick"
+    this.objs=[]; // Optional associated objects to pass to callbacks
     this.looped=0; // Completed iterations
     this.loop=1; // Number of times to loop, 0 means infinite
 

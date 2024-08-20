@@ -333,7 +333,7 @@ function loadmodel(name)
 function createobjects()
 {
   gs.models[0].anim=new timelineobj();
-  gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[4]).addcallback(tween).begin(0);
+  gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[4]).assoc(gs.models[0]).addcallback(tween).begin(0);
 }
 
 function checkerboard()
