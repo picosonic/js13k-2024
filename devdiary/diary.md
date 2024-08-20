@@ -83,3 +83,7 @@ Added a custom loader which can import 3D models in a JSON format that I've used
 19th August
 -----------
 Added 3D fps style movement to the camera when in debug mode.
+
+20th August
+-----------
+Added multiple callbacks and object associations to be added to timelines.
