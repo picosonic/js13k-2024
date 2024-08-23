@@ -61,11 +61,11 @@ var gs={
 
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[
-    {m: cube(), s: [1, 1, 1], p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
-    {m: loadmodel("coriolis"), s: [1, 1, 1], p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
-    {m: cube(), s: [1, 1, 1], p: [4, 0, 0], r: [0, 0, 0], c: [0.5, 1, 0]},
-    {m: checkerboard(), s: [1, 1, 1], p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]},
-    {m: loadmodel("stealth"), s: [0.005, 0.005, 0.005], p: [0, 4, -5], r: [0, 0, 0], c: [1, 0, 0.5]},
+    {m: loadmodel("chipcube"), s: 0.1, p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
+    {m: loadmodel("coriolis"), s: 1, p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
+    {m: loadmodel("tree"), s: 0.3, p: [4, 0, 0], r: [0, 0, 0], c: [0.5, 1, 0]},
+    {m: checkerboard(), s: 1, p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]},
+    {m: loadmodel("stealth"), s: 0.005, p: [0, 4, -5], r: [0, 0, 0], c: [1, 0, 0.5]},
   ],
 
   // Timeline for general animation
@@ -166,6 +166,7 @@ function movestep()
     // Reset rotation
     gs.models[1].r=[0, 0, 0];
 
+    // Allow another movement input
     gs.moving=KEYNONE;
   }
 }
@@ -236,14 +237,14 @@ function update()
 
     if (ispressed(KEYUP))
     {
-      gs.scene.c.p[0]-=(0.1*Math.sin(gs.scene.c.r[1]*PIOVER180));
-      gs.scene.c.p[2]+=(0.1*Math.cos(gs.scene.c.r[1]*PIOVER180));
+      gs.scene.c.p[0]-=(0.2*Math.sin(gs.scene.c.r[1]*PIOVER180));
+      gs.scene.c.p[2]+=(0.2*Math.cos(gs.scene.c.r[1]*PIOVER180));
     }
 
     if (ispressed(KEYDOWN))
     {
-      gs.scene.c.p[0]+=(0.1*Math.sin(gs.scene.c.r[1]*PIOVER180));
-      gs.scene.c.p[2]-=(0.1*Math.cos(gs.scene.c.r[1]*PIOVER180));
+      gs.scene.c.p[0]+=(0.2*Math.sin(gs.scene.c.r[1]*PIOVER180));
+      gs.scene.c.p[2]-=(0.2*Math.cos(gs.scene.c.r[1]*PIOVER180));
     }
 
     // prevent angle over/underflow
