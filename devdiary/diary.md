@@ -87,3 +87,11 @@ Added 3D fps style movement to the camera when in debug mode.
 20th August
 -----------
 Added multiple callbacks and object associations to be added to timelines.
+
+23rd August
+-----------
+Allow scale to be single number or array when adding models to scene, as a lot of the time, the scale in X, Y and Z will be the same.
+
+Added more 3D models for testing, stealth fighter - from my [JS13k entry in 2021](https://js13kgames.com/entries/airspace-alpha-zulu), chipcube and tree - from my [JS13k entry in 2019](https://js13kgames.com/entries/backspace-return-to-planet-figadore).
+
+Increase movement speed in debug mode.
