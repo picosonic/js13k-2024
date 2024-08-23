@@ -95,8 +95,9 @@ var W = {
 
   render: (scene, gl, aspectratio, program) => {
     const black=[0, 0, 0, 0]; // [r, g, b, a]
-    var i, j, vertices, faces, colours, modelMatrix, texture, a;
+    var i, j, vertices, faces, colours, modelMatrix, a;
     var allvertices=[];
+    var scale=[1, 1, 1]; // [x, y, z]
 
     // Clear before drawing
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -125,7 +126,14 @@ var W = {
       gl.enableVertexAttribArray(a);
       
       // Set the model matrix
-      modelMatrix = new DOMMatrix().translate(...(i.p||[0,0,0])).rotate(...(i.r||[0,0,0])).scale(...(i.s||[1,1,1]));
+      if (i.s!=undefined)
+      {
+        if (typeof i.s == "number")
+          scale=[i.s, i.s, i.s];
+        else
+          scale=i.s;
+      }
+      modelMatrix = new DOMMatrix().translate(...(i.p||[0,0,0])).rotate(...(i.r||[0,0,0])).scale(...scale);
       gl.uniformMatrix4fv(gl.getUniformLocation(program, 'm'), false, modelMatrix.toFloat32Array());
       
       // Set the model's color
