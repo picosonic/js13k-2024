@@ -64,7 +64,7 @@ var gs={
     {m: loadmodel("chipcube"), s: 0.1, p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
     {m: loadmodel("coriolis"), s: 1, p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
     {m: loadmodel("tree"), s: 0.3, p: [4, 0, 0], r: [0, 0, 0]},
-    {m: checkerboard(), s: 1, p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]},
+    {m: checkerboard(), s: 2, p: [0, -4, 0], r: [-90, 0, 0]},
     {m: loadmodel("stealth"), s: 0.005, p: [0, 4, -5], r: [0, 0, 0]},
     {m: cube(), s: 1, p: [-7, 0, 0], r: [0, 0, 0]},
   ],
@@ -343,26 +343,28 @@ function checkerboard()
   var vertices = [];
   var faces = [];
   var colours = [];
-  var alt = 0;
   var v = 0; // Current vertex
+  const gridsize=16;
+  const originx=-(gridsize/2);
+  const originy=-(gridsize/2)
 
-  for (var y=0; y<8; y++)
+  for (var y=0; y<gridsize; y++)
   {
-    for (var x=0; x<8; x++)
+    for (var x=0; x<gridsize; x++)
     {
       // vertices (x, y, z)
-      vertices.push([ x*1,  y*1, 1]); v++;
-      vertices.push([x*-1,  y*1, 1]); v++;
-      vertices.push([x*-1, y*-1, 1]); v++;
-      vertices.push([ x*1, y*-1, 1]); v++;
+      vertices.push([originx+x+0, originy+y+0, 1]); v++;
+      vertices.push([originx+x+0, originy+y+1, 1]); v++;
+      vertices.push([originx+x+1, originy+y+1, 1]); v++;
+      vertices.push([originx+x+1, originy+y+0, 1]); v++;
 
       // faces
       faces.push([v-4, v-3, v-2]);
       faces.push([v-4, v-2, v-1]);
 
       // colours
-      colours.push(7+(alt&1)); // alternating black and white
-      colours.push(7+((alt++)&1));
+      colours.push(7+((x+y)&1)); // alternating black and white
+      colours.push(7+((x+y)&1));
     }
   }
 
