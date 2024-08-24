@@ -31,7 +31,7 @@ var gs={
   // Game world
   scene:{
     // Background color [r, g, b, a]
-    b: { c: [.5, .5, .5, 1] },
+    b: { c: [.3, .3, .7, 1] },
     
     // Camera position and rotation
     c:
@@ -44,7 +44,7 @@ var gs={
     d: {p: [.5, -.3, -.7], c: [1, 1, 1]},
     
     // Ambient light [r, g, b] color
-    a: {c: [0.3, 0.3, 0.2]},
+    a: {c: [0.5, 0.5, 0.5]},
 
     // Objects to render
     o: []
