@@ -360,7 +360,8 @@ function checkerboard()
       faces.push([v-4, v-2, v-1]);
 
       // colours
-      colours.push(7+((alt++)&1)); // alternating black and white
+      colours.push(7+(alt&1)); // alternating black and white
+      colours.push(7+((alt++)&1));
     }
   }
 
