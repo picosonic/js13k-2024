@@ -88,3 +88,50 @@ function updatekeystate(e, dir)
         break;
     }
   }
+
+///////////
+// Mouse
+///////////
+
+// Move the pointer position
+function pointerpos(e, dir)
+{
+  if (dir==1)
+  {
+    if (!gs.touch)
+    {
+      // Press - record positions
+      gs.keystate=KEYNONE;
+
+      gs.cursorx=e.offsetX;
+      gs.cursory=e.offsetY;
+
+      gs.touch=true;
+    }
+  }
+  else
+  {
+    // Release - calculate deltas
+    var deltax=e.offsetX-gs.cursorx;
+    var deltay=e.offsetY-gs.cursory;
+
+    gs.keystate=KEYNONE;
+
+    if (Math.abs(deltax)>Math.abs(deltay))
+    {
+      // Horizontal
+      if (deltax>0)
+        gs.keystate|=KEYRIGHT;
+      else
+        gs.keystate|=KEYLEFT;
+    }
+    else
+    {
+      // Vertical
+      if (deltay>0)
+        gs.keystate|=KEYDOWN;
+      else
+        gs.keystate|=KEYUP;
+    }
+  }
+}

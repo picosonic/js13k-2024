@@ -53,6 +53,9 @@ var gs={
 
   // Input
   keystate:KEYNONE,
+  cursorx:0,
+  cursory:0,
+  touch:false,
 
   // In motion
   moving:KEYNONE, // Current moving direction
@@ -169,6 +172,13 @@ function movestep()
 
     // Allow another movement input
     gs.moving=KEYNONE;
+
+    // If pointer in use, stop movement
+    if (gs.touch)
+    {
+      gs.keystate=KEYNONE;
+      gs.touch=false;
+    }
   }
 }
 
@@ -397,6 +407,19 @@ function init()
   // Set up canvas
   gs.canvas=document.getElementById("canvas");
   gs.gl=gs.canvas.getContext("webgl2");
+
+  // Mouse events
+  gs.canvas.onmousedown=function(e)
+  {
+    e = e || window.event;
+    pointerpos(e, 1);
+  };
+
+  gs.canvas.onmouseup=function(e)
+  {
+    e = e || window.event;
+    pointerpos(e, 0);
+  };
 
   // Set up handler for browser being resized (or re-oriented)
   window.addEventListener("resize", function() { playfieldsize(); });
