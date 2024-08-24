@@ -38,16 +38,15 @@ var W = {
     gl.shaderSource(vs = gl.createShader(gl.VERTEX_SHADER),
     `#version 300 es
       precision lowp float;
-      in vec4 c,p,u;
+      in vec4 fc,p;
       uniform mat4 M,m;
-      out vec4 C,P,U;
+      out vec4 C,P;
 
       void main()
       {
         gl_Position=M*p;
         P=m*p;
-        C=c;
-        U=u;
+        C=fc;
       }`);
     gl.compileShader(vs);
     //console.log('vertex shader:', gl.getShaderInfoLog(vs) || 'OK');
@@ -57,14 +56,13 @@ var W = {
     `#version 300 es
       precision lowp float;
       uniform vec3 c,d,a;
-      in vec4 C,P,U;
+      in vec4 C,P;
       out vec4 o;
-      uniform sampler2D s;
       
       void main()
       {
         float n=max(dot(d,-normalize(cross(dFdx(P.xyz),dFdy(P.xyz)))),0.);
-        o=mix(texture(s,U.xy),vec4(c*C.rgb*n+a*C.rgb,1.),C.a);
+        o=vec4(c*C.rgb*n+a*C.rgb,1.);
       }`);
     gl.compileShader(fs);
     //console.log('fragment shader:', gl.getShaderInfoLog(fs) || 'OK');
@@ -95,8 +93,9 @@ var W = {
 
   render: (scene, gl, aspectratio, program) => {
     const black=[0, 0, 0, 0]; // [r, g, b, a]
-    var i, j, vertices, faces, colours, modelMatrix, a;
+    var i, j, fi, vertices, faces, fc, colours, modelMatrix, a, b;
     var allvertices=[];
+    var facecolours=[];
     var scale=[1, 1, 1]; // [x, y, z]
 
     // Clear before drawing
@@ -110,10 +109,24 @@ var W = {
 
       // Clear for current model 
       allvertices=[];
+      facecolours=[];
+      fi=0;
 
       // Translate faces
       for (j of faces)
       {
+        // Add face colour for each of the 3 vertices
+        if (i.c)
+          fc=i.c;
+        else
+          fc=palette[colours[fi]];
+        
+        facecolours.push(...fc.concat(1));
+        facecolours.push(...fc.concat(1));
+        facecolours.push(...fc.concat(1));
+        fi++;
+
+        // Add vertex for each of the 3 points referenced by the face 
         allvertices.push(...vertices[j[0]]);
         allvertices.push(...vertices[j[1]]);
         allvertices.push(...vertices[j[2]]);
@@ -136,16 +149,11 @@ var W = {
       modelMatrix = new DOMMatrix().translate(...(i.p||[0,0,0])).rotate(...(i.r||[0,0,0])).scale(...scale);
       gl.uniformMatrix4fv(gl.getUniformLocation(program, 'm'), false, modelMatrix.toFloat32Array());
       
-      // Set the model's color
-      if (i.c)
-      {
-        gl.vertexAttrib3f(gl.getAttribLocation(program, 'c'), ...i.c);
-      }
-      else
-      {
-        // Set a default base colour to black in RGBA
-        gl.vertexAttrib4f(gl.getAttribLocation(program, 'c'), ...black);
-      }
+      // Set the model's colors
+      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(facecolours), gl.STATIC_DRAW);
+      gl.vertexAttribPointer(b=gl.getAttribLocation(program, 'fc'), 4, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(b);
 
       // Set the cube's mvp matrix (camera x model)
       // Camera matrix (fov: 30deg, near: 0.1, far: 100)
@@ -213,11 +221,17 @@ function cube()
   // colours (index to palette)
   [
     7, // white
+    7,
     1, // red
+    1,
     2, // green
+    2,
     3, // blue
+    3,
     6, // yellow
-    5  // magenta
+    6,
+    5, // magenta
+    5
   ]
 ];
 }

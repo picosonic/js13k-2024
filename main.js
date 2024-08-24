@@ -63,9 +63,10 @@ var gs={
   models:[
     {m: loadmodel("chipcube"), s: 0.1, p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
     {m: loadmodel("coriolis"), s: 1, p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
-    {m: loadmodel("tree"), s: 0.3, p: [4, 0, 0], r: [0, 0, 0], c: [0.5, 1, 0]},
+    {m: loadmodel("tree"), s: 0.3, p: [4, 0, 0], r: [0, 0, 0]},
     {m: checkerboard(), s: 1, p: [0, -3, 0], r: [-90, 0, 0], c: [0.7, 0.7, 0.7]},
-    {m: loadmodel("stealth"), s: 0.005, p: [0, 4, -5], r: [0, 0, 0], c: [1, 0, 0.5]},
+    {m: loadmodel("stealth"), s: 0.005, p: [0, 4, -5], r: [0, 0, 0]},
+    {m: cube(), s: 1, p: [-7, 0, 0], r: [0, 0, 0]},
   ],
 
   // Timeline for general animation
@@ -106,8 +107,8 @@ function playfieldsize()
 function tween(obj, percent)
 {
   // spin model
-  obj.r[0]+=0.2;
-  obj.r[1]+=0.2;
+  obj.r[0]+=0.4;
+  obj.r[1]+=0.4;
 }
 
 // When moving, step forwards until at target
@@ -334,7 +335,7 @@ function loadmodel(name)
 function createobjects()
 {
   gs.models[0].anim=new timelineobj();
-  gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[4]).assoc(gs.models[0]).addcallback(tween).begin(0);
+  gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[5]).assoc(gs.models[4]).assoc(gs.models[0]).addcallback(tween).begin(0);
 }
 
 function checkerboard()

@@ -95,3 +95,9 @@ Allow scale to be single number or array when adding models to scene, as a lot o
 Added more 3D models for testing, stealth fighter - from my [JS13k entry in 2021](https://js13kgames.com/entries/airspace-alpha-zulu), chipcube and tree - from my [JS13k entry in 2019](https://js13kgames.com/entries/backspace-return-to-planet-figadore).
 
 Increase movement speed in debug mode.
+
+Fixed checkerboard and built-in cube face colours array length, each square has 2 triangular faces.
+
+Increased model rotation speed.
+
+Process per-face colours when set in model object, but can be replaced by a whole-object colour.
