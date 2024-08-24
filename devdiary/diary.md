@@ -101,3 +101,11 @@ Fixed checkerboard and built-in cube face colours array length, each square has 
 Increased model rotation speed.
 
 Process per-face colours when set in model object, but can be replaced by a whole-object colour.
+
+24th August
+-----------
+Fix checkerboard routine after realising the colours were being overridden to grey and fixed the colours would produce strips when an even numbered grid axis lengths, used an origin point to make model centered on 0,0 and fixed vertex positions.
+
+Add mouse/touch input control so swiping should be equivalent to cursor control.
+
+Added some very basic levels to start off some gameplay testing.
