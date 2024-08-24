@@ -421,6 +421,18 @@ function init()
     pointerpos(e, 0);
   };
 
+  gs.canvas.addEventListener("touchstart", function(e)
+  {
+    e = e || window.event;
+    touchpos(e, 1);
+  });
+
+  gs.canvas.addEventListener("touchend", function(e)
+  {
+    e = e || window.event;
+    touchpos(e, 0);
+  });
+
   // Set up handler for browser being resized (or re-oriented)
   window.addEventListener("resize", function() { playfieldsize(); });
 

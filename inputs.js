@@ -103,8 +103,8 @@ function pointerpos(e, dir)
       // Press - record positions
       gs.keystate=KEYNONE;
 
-      gs.cursorx=e.offsetX;
-      gs.cursory=e.offsetY;
+      gs.cursorx=e.clientX;
+      gs.cursory=e.clientY;
 
       gs.touch=true;
     }
@@ -112,8 +112,8 @@ function pointerpos(e, dir)
   else
   {
     // Release - calculate deltas
-    var deltax=e.offsetX-gs.cursorx;
-    var deltay=e.offsetY-gs.cursory;
+    var deltax=e.clientX-gs.cursorx;
+    var deltay=e.clientY-gs.cursory;
 
     gs.keystate=KEYNONE;
 
@@ -134,4 +134,13 @@ function pointerpos(e, dir)
         gs.keystate|=KEYUP;
     }
   }
+}
+
+function touchpos(e, dir)
+{
+  try
+  {
+    pointerpos(e.touches[0] || e.changedTouches[0], dir);
+  }
+  catch(err){}
 }
