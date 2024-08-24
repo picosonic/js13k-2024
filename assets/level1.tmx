@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="3" height="2" tilewidth="8" tileheight="8" infinite="0" nextlayerid="3" nextobjectid="1">
+ <properties>
+  <property name="title" value="Simple"/>
+ </properties>
+ <tileset firstgid="1" source="tilemap.tsx"/>
+ <layer id="1" name="tiles" width="3" height="2">
+  <data encoding="csv">
+0,0,2,
+3,1,1
+</data>
+ </layer>
+</map>
