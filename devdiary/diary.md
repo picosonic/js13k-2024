@@ -109,3 +109,15 @@ Fix checkerboard routine after realising the colours were being overridden to gr
 Add mouse/touch input control so swiping should be equivalent to cursor control.
 
 Added some very basic levels to start off some gameplay testing.
+
+28th August
+-----------
+Fixed issue with mouse/touch control when just clicking so that a minimum of 10% movement in either X or Y is required before registering as a swipe.
+
+Removed test models so that I can load in test levels.
+
+Make a note of which is the player model. Also note position in 2D level array so that restrictions can be made and items collected.
+
+Sped up rotation when moving, and determined that translation should be about 1/45th of the rotation to make it appear natural rotation.
+
+Allow checkerboards to be created of any size.
