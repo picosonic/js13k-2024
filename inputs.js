@@ -117,9 +117,20 @@ function pointerpos(e, dir)
 
     gs.keystate=KEYNONE;
 
+    // Make sure we were in a pressed state already
+    if (!gs.touch)
+      return;
+
+    // Work out which axis had the most movement
     if (Math.abs(deltax)>Math.abs(deltay))
     {
       // Horizontal
+      if (Math.abs(deltax)<gs.deadzoneX)
+      {
+        gs.touch=false;
+        return;
+      }
+
       if (deltax>0)
         gs.keystate|=KEYRIGHT;
       else
@@ -128,6 +139,12 @@ function pointerpos(e, dir)
     else
     {
       // Vertical
+      if (Math.abs(deltay)<gs.deadzoneY)
+      {
+        gs.touch=false;
+        return;
+      }
+
       if (deltay>0)
         gs.keystate|=KEYDOWN;
       else

@@ -56,6 +56,8 @@ var gs={
   cursorx:0,
   cursory:0,
   touch:false,
+  deadzoneX:0,
+  deadzoneY:0,
 
   // In motion
   moving:KEYNONE, // Current moving direction
@@ -97,6 +99,9 @@ function playfieldsize()
     left=0;
     top=Math.floor((window.innerHeight/2)-(height/2));
   }
+
+  gs.deadzoneX=window.innerWidth/10;
+  gs.deadzoneY=window.innerHeight/10;
 
   gs.scale=(height/ymax);
 
