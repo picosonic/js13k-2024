@@ -64,15 +64,23 @@ var gs={
   tp:[0, 0, 0], // Target [x, y, z] position
   tr:[0, 0, 0], // Target [pitch, yaw, roll] rotation
 
+  // Current level data
+  level:1,
+
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[
-    {m: loadmodel("chipcube"), s: 0.1, p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
-    {m: loadmodel("coriolis"), s: 1, p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
-    {m: loadmodel("tree"), s: 0.3, p: [4, 0, 0], r: [0, 0, 0]},
-    {m: checkerboard(), s: 2, p: [0, -4, 0], r: [-90, 0, 0]},
-    {m: loadmodel("stealth"), s: 0.005, p: [0, 4, -5], r: [0, 0, 0]},
-    {m: cube(), s: 1, p: [-7, 0, 0], r: [0, 0, 0]},
+    //{m: loadmodel("chipcube"), s: 0.1, p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
+    //{m: loadmodel("coriolis"), s: 1, p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
+    //{m: loadmodel("tree"), s: 0.3, p: [4, 0, 0], r: [0, 0, 0]},
+    //{m: checkerboard(16), s: 2, p: [0, -4, 0], r: [-90, 0, 0]},
+    //{m: loadmodel("stealth"), s: 0.005, p: [0, 4, -5], r: [0, 0, 0]},
+    //{m: cube(), s: 1, p: [-7, 0, 0], r: [0, 0, 0]},
   ],
+
+  // Player
+  charx:0, // player x position in 2D level array
+  chary:0, // player y position in 2D level array
+  player:0, // which model is the player
 
   // Timeline for general animation
   timeline:new timelineobj(),
@@ -123,6 +131,8 @@ function tween(obj, percent)
 function movestep()
 {
   var done=0;
+  const rotspeed=16; // degress per frame
+  const transpeed=(rotspeed/45); // world coordinates translation per frame
 
   // Do nothing if we're not moving
   if (gs.moving==KEYNONE) return;
@@ -131,39 +141,39 @@ function movestep()
   for (var i=0; i<3; i++)
   {
     // Position check
-    if (gs.models[1].p[i]<gs.tp[i])
+    if (gs.models[gs.player].p[i]<gs.tp[i])
     {
-      gs.models[1].p[i]+=0.0444;
+      gs.models[gs.player].p[i]+=transpeed;
 
-      if (gs.models[1].p[i]>gs.tp[i])
-        gs.models[1].p[i]=gs.tp[i];
+      if (gs.models[gs.player].p[i]>gs.tp[i])
+        gs.models[gs.player].p[i]=gs.tp[i];
     }
     else
-    if (gs.models[1].p[i]>gs.tp[i])
+    if (gs.models[gs.player].p[i]>gs.tp[i])
     {
-      gs.models[1].p[i]-=0.0444;
+      gs.models[gs.player].p[i]-=transpeed;
 
-      if (gs.models[1].p[i]<gs.tp[i])
-        gs.models[1].p[i]=gs.tp[i];
+      if (gs.models[gs.player].p[i]<gs.tp[i])
+        gs.models[gs.player].p[i]=gs.tp[i];
     }
     else
       done++;
 
     // Rotation check
-    if (gs.models[1].r[i]<gs.tr[i])
+    if (gs.models[gs.player].r[i]<gs.tr[i])
     {
-      gs.models[1].r[i]+=2;
+      gs.models[gs.player].r[i]+=rotspeed;
 
-      if (gs.models[1].r[i]>gs.tr[i])
-        gs.models[1].r[i]=gs.tr[i];
+      if (gs.models[gs.player].r[i]>gs.tr[i])
+        gs.models[gs.player].r[i]=gs.tr[i];
     }
     else
-    if (gs.models[1].r[i]>gs.tr[i])
+    if (gs.models[gs.player].r[i]>gs.tr[i])
     {
-      gs.models[1].r[i]-=2;
+      gs.models[gs.player].r[i]-=rotspeed;
 
-      if (gs.models[1].r[i]<gs.tr[i])
-        gs.models[1].r[i]=gs.tr[i];
+      if (gs.models[gs.player].r[i]<gs.tr[i])
+        gs.models[gs.player].r[i]=gs.tr[i];
     }
     else
       done++;
@@ -173,7 +183,7 @@ function movestep()
   if (done==6)
   {
     // Reset rotation
-    gs.models[1].r=[0, 0, 0];
+    gs.models[gs.player].r=[0, 0, 0];
 
     // Allow another movement input
     gs.moving=KEYNONE;
@@ -199,10 +209,10 @@ function update()
       {
         gs.moving=KEYLEFT;
 
-        gs.tp=[].concat(gs.models[1].p);
+        gs.tp=[].concat(gs.models[gs.player].p);
         gs.tp[0]-=2;
 
-        gs.tr=[].concat(gs.models[1].r);
+        gs.tr=[].concat(gs.models[gs.player].r);
         gs.tr[2]+=90;
       }
       else
@@ -210,10 +220,10 @@ function update()
       {
         gs.moving=KEYRIGHT;
 
-        gs.tp=[].concat(gs.models[1].p);
+        gs.tp=[].concat(gs.models[gs.player].p);
         gs.tp[0]+=2;
 
-        gs.tr=[].concat(gs.models[1].r);
+        gs.tr=[].concat(gs.models[gs.player].r);
         gs.tr[2]-=90;
       }
       else
@@ -221,10 +231,10 @@ function update()
       {
         gs.moving=KEYUP;
 
-        gs.tp=[].concat(gs.models[1].p);
+        gs.tp=[].concat(gs.models[gs.player].p);
         gs.tp[2]-=2;
 
-        gs.tr=[].concat(gs.models[1].r);
+        gs.tr=[].concat(gs.models[gs.player].r);
         gs.tr[0]-=90;
       }
       else
@@ -232,10 +242,10 @@ function update()
       {
         gs.moving=KEYDOWN;
 
-        gs.tp=[].concat(gs.models[1].p);
+        gs.tp=[].concat(gs.models[gs.player].p);
         gs.tp[2]+=2;
 
-        gs.tr=[].concat(gs.models[1].r);
+        gs.tr=[].concat(gs.models[gs.player].r);
         gs.tr[0]+=90;
       }
     }
@@ -346,20 +356,82 @@ function loadmodel(name)
   return cube();
 }
 
+// Load current level
+function loadlevel()
+{
+  const floorscale=6;
+
+  for (var y=0; y<levels[gs.level].height; y++)
+  {
+    for (var x=0; x<levels[gs.level].width; x++)
+    {
+      var piece={
+        s: 1,
+        p: [(x*floorscale)-12, 0, -5+(y*floorscale)],
+        r: [90, 0, 0]
+      };
+
+      switch (levels[gs.level].tiles[((y*levels[gs.level].width)+x)||0])
+      {
+        case 0: // empty
+          continue;
+          break;
+
+        case 1: // normal
+          piece.m=checkerboard(floorscale);
+          break;
+
+        case 2: // end
+          piece.c=[1, 0, 0];
+          piece.m=checkerboard(floorscale);
+          break;
+
+        case 3: // start
+          gs.charx=x; gs.chary=y;
+          gs.player=gs.models.length;
+          gs.models.push({m: loadmodel("coriolis"), s: 1, p: [(x*floorscale)-12, 0, -5+(y*floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
+
+          piece.c=[0, 1, 0];
+          piece.m=checkerboard(floorscale);
+          break;
+
+        case 4: // block
+          piece.m=checkerboard(floorscale);
+          break;
+
+        case 5: // button
+          piece.m=checkerboard(floorscale);
+          break;
+
+        case 6: // count
+          piece.m=checkerboard(floorscale);
+          break;
+
+        default: // undefined
+          continue;
+          break;
+      }
+
+      gs.models.push(piece);
+    }
+  }
+}
+
 // Load and generate 3D models
 function createobjects()
 {
-  gs.models[0].anim=new timelineobj();
-  gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[5]).assoc(gs.models[4]).assoc(gs.models[0]).addcallback(tween).begin(0);
+  //gs.models[0].anim=new timelineobj();
+  //gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[5]).assoc(gs.models[4]).assoc(gs.models[0]).addcallback(tween).begin(0);
+
+  loadlevel();
 }
 
-function checkerboard()
+function checkerboard(gridsize)
 {
   var vertices = [];
   var faces = [];
   var colours = [];
   var v = 0; // Current vertex
-  const gridsize=16;
   const originx=-(gridsize/2);
   const originy=-(gridsize/2)
 
