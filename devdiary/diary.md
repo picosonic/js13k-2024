@@ -121,3 +121,9 @@ Make a note of which is the player model. Also note position in 2D level array s
 Sped up rotation when moving, and determined that translation should be about 1/45th of the rotation to make it appear natural rotation.
 
 Allow checkerboards to be created of any size.
+
+29th August
+-----------
+Constrain movements to level squares.
+
+Updated movement to allow inputs in multiple axes at once so the first available route is taken. This means you no longer need to move up to a boundary, then stop to change axis.
