@@ -12,6 +12,8 @@ const KEYRIGHT=4;
 const KEYDOWN=8;
 const KEYACTION=16;
 
+const moveamount=2;
+
 // Game state
 var gs={
   // animation frame of reference
@@ -36,7 +38,7 @@ var gs={
     // Camera position and rotation
     c:
     {
-      p: [3, -5, -10], // [x, y, z]
+      p: [3, -5, -20], // [x, y, z]
       r: [20, 10, 0]   // [pitch, yaw, roll]
     },
     
@@ -65,7 +67,8 @@ var gs={
   tr:[0, 0, 0], // Target [pitch, yaw, roll] rotation
 
   // Current level data
-  level:1,
+  level:2,
+  floorscale:6,
 
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[
@@ -78,8 +81,6 @@ var gs={
   ],
 
   // Player
-  charx:0, // player x position in 2D level array
-  chary:0, // player y position in 2D level array
   player:0, // which model is the player
 
   // Timeline for general animation
@@ -197,6 +198,58 @@ function movestep()
   }
 }
 
+// Determine if the player can move in a given direction
+function canmove(direction)
+{
+  var dx=0;
+  var dy=0;
+  var tile;
+
+  // Determine delta based on intended direction
+  switch (direction)
+  {
+    case KEYLEFT:
+      dx=-1;
+      break;
+
+    case KEYRIGHT:
+      dx=1;
+      break;
+
+    case KEYUP:
+      dy=-1;
+      break;
+
+    case KEYDOWN:
+      dy=1;
+      break;
+
+    default:
+      break;
+  }
+
+  // Look ahead to target position
+  try
+  {
+    // Calculate target position
+    var tx=Math.floor((gs.models[gs.player].p[0]+moveamount+(dx*moveamount))/gs.floorscale); // From X position
+    var ty=Math.floor((gs.models[gs.player].p[2]+moveamount+(dy*moveamount))/gs.floorscale); // From Z position
+
+    // Check for trying to go off map
+    if ((tx<0) || (tx>=levels[gs.level].width))
+      return false;
+
+    if ((ty<0) || (ty>=levels[gs.level].height))
+      return false;
+
+    // See what tile is in the target position
+    tile=levels[gs.level].tiles[((ty*levels[gs.level].width)+tx)]||0;
+  }
+  catch(e){ tile=0; }
+
+  return (tile!=0);
+}
+
 // Run an update step to the game state
 function update()
 {
@@ -207,50 +260,71 @@ function update()
     {
       if (ispressed(KEYLEFT))
       {
-        gs.moving=KEYLEFT;
+        if (canmove(KEYLEFT))
+        {
+          gs.moving=KEYLEFT;
 
-        gs.tp=[].concat(gs.models[gs.player].p);
-        gs.tp[0]-=2;
+          gs.tp=[].concat(gs.models[gs.player].p);
+          gs.tp[0]-=moveamount;
 
-        gs.tr=[].concat(gs.models[gs.player].r);
-        gs.tr[2]+=90;
-      }
-      else
-      if (ispressed(KEYRIGHT))
-      {
-        gs.moving=KEYRIGHT;
-
-        gs.tp=[].concat(gs.models[gs.player].p);
-        gs.tp[0]+=2;
-
-        gs.tr=[].concat(gs.models[gs.player].r);
-        gs.tr[2]-=90;
-      }
-      else
-      if (ispressed(KEYUP))
-      {
-        gs.moving=KEYUP;
-
-        gs.tp=[].concat(gs.models[gs.player].p);
-        gs.tp[2]-=2;
-
-        gs.tr=[].concat(gs.models[gs.player].r);
-        gs.tr[0]-=90;
-      }
-      else
-      if (ispressed(KEYDOWN))
-      {
-        gs.moving=KEYDOWN;
-
-        gs.tp=[].concat(gs.models[gs.player].p);
-        gs.tp[2]+=2;
-
-        gs.tr=[].concat(gs.models[gs.player].r);
-        gs.tr[0]+=90;
+          gs.tr=[].concat(gs.models[gs.player].r);
+          gs.tr[2]+=90;
+        }
       }
     }
 
-    movestep();
+    if (gs.moving==KEYNONE)
+    {
+      if (ispressed(KEYRIGHT))
+      {
+        if (canmove(KEYRIGHT))
+        {
+          gs.moving=KEYRIGHT;
+
+          gs.tp=[].concat(gs.models[gs.player].p);
+          gs.tp[0]+=moveamount;
+
+          gs.tr=[].concat(gs.models[gs.player].r);
+          gs.tr[2]-=90;
+        }
+      }
+    }
+
+    if (gs.moving==KEYNONE)
+    {
+      if (ispressed(KEYUP))
+      {
+        if (canmove(KEYUP))
+        {
+          gs.moving=KEYUP;
+
+          gs.tp=[].concat(gs.models[gs.player].p);
+          gs.tp[2]-=moveamount;
+
+          gs.tr=[].concat(gs.models[gs.player].r);
+          gs.tr[0]-=90;
+        }
+      }
+    }
+
+    if (gs.moving==KEYNONE)
+    {
+      if (ispressed(KEYDOWN))
+      {
+        if (canmove(KEYDOWN))
+        {
+          gs.moving=KEYDOWN;
+
+          gs.tp=[].concat(gs.models[gs.player].p);
+          gs.tp[2]+=moveamount;
+
+          gs.tr=[].concat(gs.models[gs.player].r);
+          gs.tr[0]+=90;
+        }
+      }
+    }
+
+    if (gs.moving!=KEYNONE) movestep();
   }
   else
   {
@@ -359,52 +433,49 @@ function loadmodel(name)
 // Load current level
 function loadlevel()
 {
-  const floorscale=6;
-
   for (var y=0; y<levels[gs.level].height; y++)
   {
     for (var x=0; x<levels[gs.level].width; x++)
     {
       var piece={
         s: 1,
-        p: [(x*floorscale)-12, 0, -5+(y*floorscale)],
+        p: [(x*gs.floorscale), 0, (y*gs.floorscale)],
         r: [90, 0, 0]
       };
 
-      switch (levels[gs.level].tiles[((y*levels[gs.level].width)+x)||0])
+      switch (levels[gs.level].tiles[((y*levels[gs.level].width)+x)]||0)
       {
         case 0: // empty
           continue;
           break;
 
         case 1: // normal
-          piece.m=checkerboard(floorscale);
+          piece.m=checkerboard(gs.floorscale);
           break;
 
         case 2: // end
           piece.c=[1, 0, 0];
-          piece.m=checkerboard(floorscale);
+          piece.m=checkerboard(gs.floorscale);
           break;
 
         case 3: // start
-          gs.charx=x; gs.chary=y;
           gs.player=gs.models.length;
-          gs.models.push({m: loadmodel("coriolis"), s: 1, p: [(x*floorscale)-12, 0, -5+(y*floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
+          gs.models.push({m: loadmodel("coriolis"), s: 1, p: [(x*gs.floorscale), 0, (y*gs.floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
 
           piece.c=[0, 1, 0];
-          piece.m=checkerboard(floorscale);
+          piece.m=checkerboard(gs.floorscale);
           break;
 
         case 4: // block
-          piece.m=checkerboard(floorscale);
+          piece.m=checkerboard(gs.floorscale);
           break;
 
         case 5: // button
-          piece.m=checkerboard(floorscale);
+          piece.m=checkerboard(gs.floorscale);
           break;
 
         case 6: // count
-          piece.m=checkerboard(floorscale);
+          piece.m=checkerboard(gs.floorscale);
           break;
 
         default: // undefined
