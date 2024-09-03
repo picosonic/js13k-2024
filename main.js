@@ -71,6 +71,8 @@ var gs={
   // Current level data
   level:2,
   floorscale:6,
+  timeout:-1,
+  timeoutfired:false,
 
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[
@@ -364,7 +366,7 @@ function update()
 }
 
 // Redraw the game world
-function redraw(timestamp)
+function redraw()
 {
   gs.scene.o=[];
   for(const i of gs.models)
@@ -377,11 +379,22 @@ function redraw(timestamp)
 }
 
 // Redraw the OSD
-function redrawosd(timestamp)
+function redrawosd()
 {
-  // Put up some sample text
   gs.ctx.clearRect(0, 0, gs.osd.width, gs.osd.height);
-  write(gs.ctx, (timestamp/10)%xmax, (timestamp/10)%ymax, "TESTING", 5, "rgb(255,255,255)");
+
+  // Put up the remaining time
+  var delta=Math.floor((gs.timeout-Date.now())/1000);
+
+  if ((delta<=0) && (!gs.timeoutfired))
+  {
+    // TODO : do something when timer runs out
+    gs.timeoutfired=true;
+  }
+
+  if (delta<0) delta=0;
+
+  write(gs.ctx, 10, 10, ""+delta+"s", 8, "rgba(255,0,255,0.5)");
 }
 
 function rafcallback(timestamp)
@@ -413,14 +426,14 @@ function rafcallback(timestamp)
       gs.acc-=gs.step;
     }
 
-    redraw(timestamp);
+    redraw();
   }
   
   // Remember when we were last called
   gs.lasttime=timestamp;
 
   // Redraw OSD
-  redrawosd(timestamp);
+  redrawosd();
 
   window.requestAnimationFrame(rafcallback);
 }
@@ -547,6 +560,12 @@ function checkerboard(gridsize)
   return ([vertices, faces, colours]);
 }
 
+// Set the timeout value to start the countdown timer
+function starttimer(seconds)
+{
+  gs.timeout=Date.now()+(seconds*1000);
+}
+
 // Entry point
 function init()
 {
@@ -614,6 +633,9 @@ function init()
 
   // Initialise WebGL
   gs.program=W.init(gs.scene, gs.gl);
+
+  // Start countdown timer
+  starttimer(13);
 
   // Start frame callbacks
   window.requestAnimationFrame(rafcallback);
