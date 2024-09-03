@@ -95,7 +95,7 @@ mkdir "${buildpath}"
 # Concatenate the JS files
 echo "Concatenating JS"
 touch "${jscat}" >/dev/null 2>&1
-for file in "${leveljs}" "models.js" "timeline.js" "w.js" "inputs.js" "main.js"
+for file in "font.js" "writer.js" "${leveljs}" "models.js" "timeline.js" "w.js" "inputs.js" "main.js"
 do
   cat "${file}" >> "${jscat}"
 done
@@ -118,7 +118,7 @@ echo "Using closure to minify JS"
 ./closeyoureyes.sh "${jscat}" | tr -d '\n' >> "${indexcat}"
 
 # Add on the rest of the index file
-echo -n '</script><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/></head><body><div id="wrapper"><canvas id="canvas" width="640" height="360"></canvas></div></body></html>' >> "${indexcat}"
+echo -n '</script><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/></head><body><div id="wrapper"><canvas id="canvas" width="640" height="360"></canvas><canvas id="osd" width="640" height="360"></canvas></div></body></html>' >> "${indexcat}"
 
 # Remove the minified JS
 rm "${jscat}" >/dev/null 2>&1

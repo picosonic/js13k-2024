@@ -26,6 +26,8 @@ var gs={
   // Canvas
   canvas:null,
   gl:null,
+  osd:null,
+  ctx:null,
   scale:1,
 
   ratio:(xmax/ymax),
@@ -118,6 +120,11 @@ function playfieldsize()
   gs.canvas.style.left=left+"px";
   gs.canvas.style.transformOrigin='0 0';
   gs.canvas.style.transform='scale('+gs.scale+')';
+
+  gs.osd.style.top=top+"px";
+  gs.osd.style.left=left+"px";
+  gs.osd.style.transformOrigin='0 0';
+  gs.osd.style.transform='scale('+gs.scale+')';
 }
 
 // Advance object animations onwards
@@ -357,7 +364,7 @@ function update()
 }
 
 // Redraw the game world
-function redraw()
+function redraw(timestamp)
 {
   gs.scene.o=[];
   for(const i of gs.models)
@@ -367,6 +374,14 @@ function redraw()
 
   if (gs.debug)
     document.title=""+gs.fps+" fps";
+}
+
+// Redraw the OSD
+function redrawosd(timestamp)
+{
+  // Put up some sample text
+  gs.ctx.clearRect(0, 0, gs.osd.width, gs.osd.height);
+  write(gs.ctx, (timestamp/10)%xmax, (timestamp/10)%ymax, "TESTING", 5, "rgb(255,255,255)");
 }
 
 function rafcallback(timestamp)
@@ -398,11 +413,14 @@ function rafcallback(timestamp)
       gs.acc-=gs.step;
     }
 
-    redraw();
+    redraw(timestamp);
   }
   
   // Remember when we were last called
   gs.lasttime=timestamp;
+
+  // Redraw OSD
+  redrawosd(timestamp);
 
   window.requestAnimationFrame(rafcallback);
 }
@@ -552,9 +570,13 @@ function init()
     e.preventDefault();
   };
 
-  // Set up canvas
+  // Set up 3D canvas
   gs.canvas=document.getElementById("canvas");
   gs.gl=gs.canvas.getContext("webgl2");
+
+  // Set up 2D OSD canvas
+  gs.osd=document.getElementById("osd");
+  gs.ctx=gs.osd.getContext("2d");
 
   // Mouse events
   gs.canvas.onmousedown=function(e)
