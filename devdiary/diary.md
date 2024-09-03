@@ -127,3 +127,9 @@ Allow checkerboards to be created of any size.
 Constrain movements to level squares.
 
 Updated movement to allow inputs in multiple axes at once so the first available route is taken. This means you no longer need to move up to a boundary, then stop to change axis.
+
+3rd September
+-------------
+Added 2D pixel font rendering system to be used for an OSD.
+
+Added countdown timer, so each "action" needs to be completed within the timelimit of 13 seconds - fear of the number 13.
