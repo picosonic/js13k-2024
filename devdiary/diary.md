@@ -133,3 +133,7 @@ Updated movement to allow inputs in multiple axes at once so the first available
 Added 2D pixel font rendering system to be used for an OSD.
 
 Added countdown timer, so each "action" needs to be completed within the timelimit of 13 seconds - fear of the number 13.
+
+4th September
+-------------
+Added music based on Franz Schubert, The Trout.
