@@ -87,6 +87,9 @@ var gs={
   // Player
   player:0, // which model is the player
 
+  // True when music has been started (by user interaction)
+  music:false,
+
   // Timeline for general animation
   timeline:new timelineobj(),
 
@@ -574,6 +577,12 @@ function init()
   {
     e = e || window.event;
     updatekeystate(e, 1);
+
+    if (!gs.music)
+    {
+      gs.music=true;
+      music_play();
+    }
   };
 
   document.onkeyup=function(e)
@@ -598,25 +607,37 @@ function init()
   gs.ctx=gs.osd.getContext("2d");
 
   // Mouse events
-  gs.canvas.onmousedown=function(e)
+  gs.osd.onmousedown=function(e)
   {
     e = e || window.event;
     pointerpos(e, 1);
+
+    if (!gs.music)
+    {
+      gs.music=true;
+      music_play();
+    }
   };
 
-  gs.canvas.onmouseup=function(e)
+  gs.osd.onmouseup=function(e)
   {
     e = e || window.event;
     pointerpos(e, 0);
   };
 
-  gs.canvas.addEventListener("touchstart", function(e)
+  gs.osd.addEventListener("touchstart", function(e)
   {
     e = e || window.event;
     touchpos(e, 1);
+
+    if (!gs.music)
+    {
+      gs.music=true;
+      music_play();
+    }
   });
 
-  gs.canvas.addEventListener("touchend", function(e)
+  gs.osd.addEventListener("touchend", function(e)
   {
     e = e || window.event;
     touchpos(e, 0);
