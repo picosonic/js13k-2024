@@ -12,6 +12,14 @@ const KEYRIGHT=4;
 const KEYDOWN=8;
 const KEYACTION=16;
 
+const TILEEMPTY=0;
+const TILENORMAL=1;
+const TILEEND=2;
+const TILESTART=3;
+const TILEBLOCK=4;
+const TILEBUTTON=5;
+const TILECOUNT=6;
+
 const moveamount=2;
 
 // Game state
@@ -69,7 +77,8 @@ var gs={
   tr:[0, 0, 0], // Target [pitch, yaw, roll] rotation
 
   // Current level data
-  level:2,
+  levelnum:0,
+  level:null,
   floorscale:6,
   timeout:-1,
   timeoutfired:false,
@@ -248,18 +257,33 @@ function canmove(direction)
     var ty=Math.floor((gs.models[gs.player].p[2]+moveamount+(dy*moveamount))/gs.floorscale); // From Z position
 
     // Check for trying to go off map
-    if ((tx<0) || (tx>=levels[gs.level].width))
+    if ((tx<0) || (tx>=gs.level.width))
       return false;
 
-    if ((ty<0) || (ty>=levels[gs.level].height))
+    if ((ty<0) || (ty>=gs.level.height))
       return false;
 
     // See what tile is in the target position
-    tile=levels[gs.level].tiles[((ty*levels[gs.level].width)+tx)]||0;
-  }
-  catch(e){ tile=0; }
+    tile=gs.level.tiles[((ty*gs.level.width)+tx)]||TILEEMPTY;
 
-  return (tile!=0);
+    switch (tile)
+    {
+      case TILEEND:
+        gs.levelnum++;
+        if (gs.levelnum>levels.length)
+          gs.levelnum=0;
+
+        loadlevel();
+        return false;
+        break;
+
+      default:
+        break;
+    }
+  }
+  catch(e){ tile=TILEEMPTY; }
+
+  return (tile!=TILEEMPTY);
 }
 
 // Run an update step to the game state
@@ -387,7 +411,7 @@ function redrawosd()
   gs.ctx.clearRect(0, 0, gs.osd.width, gs.osd.height);
 
   // Put up the remaining time
-  var delta=Math.floor((gs.timeout-Date.now())/1000);
+  var delta=Math.round((gs.timeout-Date.now())/1000);
 
   if ((delta<=0) && (!gs.timeoutfired))
   {
@@ -467,9 +491,16 @@ function loadmodel(name)
 // Load current level
 function loadlevel()
 {
-  for (var y=0; y<levels[gs.level].height; y++)
+  // Copy level data so it can be changed
+  gs.level=JSON.parse(JSON.stringify(levels[gs.levelnum]));
+
+  // Clear old 3D models
+  gs.models=[];
+
+  // Convert to 3D models
+  for (var y=0; y<gs.level.height; y++)
   {
-    for (var x=0; x<levels[gs.level].width; x++)
+    for (var x=0; x<gs.level.width; x++)
     {
       var piece={
         s: 1,
@@ -477,7 +508,7 @@ function loadlevel()
         r: [90, 0, 0]
       };
 
-      switch (levels[gs.level].tiles[((y*levels[gs.level].width)+x)]||0)
+      switch (gs.level.tiles[((y*gs.level.width)+x)]||0)
       {
         case 0: // empty
           continue;
@@ -520,6 +551,8 @@ function loadlevel()
       gs.models.push(piece);
     }
   }
+
+  starttimer(13);
 }
 
 // Load and generate 3D models
@@ -654,9 +687,6 @@ function init()
 
   // Initialise WebGL
   gs.program=W.init(gs.scene, gs.gl);
-
-  // Start countdown timer
-  starttimer(13);
 
   // Start frame callbacks
   window.requestAnimationFrame(rafcallback);
