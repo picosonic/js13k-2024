@@ -137,3 +137,15 @@ Added countdown timer, so each "action" needs to be completed within the timelim
 4th September
 -------------
 Added music based on Franz Schubert, The Trout.
+
+7th September
+-------------
+Levels are now completable - i.e. you start at the start square and move to the end square to progress.
+
+Improved timer to show 13s briefly before counting down.
+
+Made copies of levels so they can be altered on-the-fly without damaging level data for further runs.
+
+Added edges to the level tiles to make them look more solid.
+
+Highlight "button" tile.
