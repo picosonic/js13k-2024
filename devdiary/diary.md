@@ -149,3 +149,13 @@ Made copies of levels so they can be altered on-the-fly without damaging level d
 Added edges to the level tiles to make them look more solid.
 
 Highlight "button" tile.
+
+8th September
+--------------
+Silence the "rests" in the music.
+
+Add state machine to navigate through game states.
+
+Added level offset 3D values such that level will be centered on 0,0,0.
+
+Playing about with rotating level depending on player position, so it feels like a ball in a maze.
