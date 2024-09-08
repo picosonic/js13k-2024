@@ -4,8 +4,5 @@ tmpbuild
 # Other folders
 closure-compiler
 
-# Generated files
-levels.js
-
 # Zip files
 *.zip
