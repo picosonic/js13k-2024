@@ -227,21 +227,24 @@ function music_play()
     // Process all the notes in the song
     for (var i in music.f)
     {
-      var e=music.audioCtx.currentTime+(music.f[parseInt(i,10)][1]*music.notelen);
-      var osc=music.audioCtx.createOscillator();
+      if (music.f[parseInt(i,10)][0]!=0)
+      {
+        var e=music.audioCtx.currentTime+(music.f[parseInt(i,10)][1]*music.notelen);
+        var osc=music.audioCtx.createOscillator();
 
-      // Pan the note to where it would sound like if played on a piano
-      osc.connect(music.panNode);
-      music.panNode.pan.setValueAtTime(((music.f[parseInt(i,10)][0]/245)*2)-1, e);
+        // Pan the note to where it would sound like if played on a piano
+        osc.connect(music.panNode);
+        music.panNode.pan.setValueAtTime(((music.f[parseInt(i,10)][0]/245)*2)-1, e);
 
-      osc.type='triangle';
+        osc.type='triangle';
 
-      // Convert the note from BBC Micro "pitch" to frequency in Hz
-      osc.frequency.value=65.41*Math.pow(2, ((music.f[parseInt(i,10)][0]-5)/4)/12);
+        // Convert the note from BBC Micro "pitch" to frequency in Hz
+        osc.frequency.value=65.41*Math.pow(2, ((music.f[parseInt(i,10)][0]-5)/4)/12);
 
-      // Set the start and stop times for the oscillator
-      osc.start(e);
-      osc.stop(e+music.notelen);
+        // Set the start and stop times for the oscillator
+        osc.start(e);
+        osc.stop(e+music.notelen);
+      }
     }
 
     if (!music.nomore)
