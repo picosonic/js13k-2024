@@ -536,6 +536,7 @@ function loadlevel()
           break;
 
         case 5: // button
+          piece.c=[1, 0, 1];
           piece.m=checkerboard(gs.floorscale);
           break;
 
@@ -590,6 +591,60 @@ function checkerboard(gridsize)
       // colours
       colours.push(7+((x+y)&1)); // alternating black and white
       colours.push(7+((x+y)&1));
+
+      // front edge
+      if ((y+1)==gridsize)
+      {
+        // vertices (x, y, z)
+        vertices.push([originx+x+0, originy+y+1, 1]); v++;
+        vertices.push([originx+x+1, originy+y+1, 1]); v++;
+        vertices.push([originx+x+1, originy+y+1, 1.5]); v++;
+        vertices.push([originx+x+0, originy+y+1, 1.5]); v++;
+
+        // faces
+        faces.push([v-4, v-3, v-2]);
+        faces.push([v-4, v-2, v-1]);
+
+        // colours
+        colours.push(7+((x+y)&1)); // alternating black and white
+        colours.push(7+((x+y)&1));
+      }
+
+      // left edge
+      if (x==0)
+      {
+        // vertices (x, y, z)
+        vertices.push([originx+x+0, originy+y+0, 1]); v++;
+        vertices.push([originx+x+0, originy+y+1, 1]); v++;
+        vertices.push([originx+x+0, originy+y+1, 1.5]); v++;
+        vertices.push([originx+x+0, originy+y+0, 1.5]); v++;
+
+        // faces
+        faces.push([v-4, v-3, v-2]);
+        faces.push([v-4, v-2, v-1]);
+
+        // colours
+        colours.push(7+((x+y)&1)); // alternating black and white
+        colours.push(7+((x+y)&1));
+      }
+
+      // right edge
+      if ((x+1)==gridsize)
+      {
+        // vertices (x, y, z)
+        vertices.push([originx+x+1, originy+y+0, 1]); v++;
+        vertices.push([originx+x+1, originy+y+1, 1]); v++;
+        vertices.push([originx+x+1, originy+y+1, 1.5]); v++;
+        vertices.push([originx+x+1, originy+y+0, 1.5]); v++;
+
+        // faces
+        faces.push([v-4, v-2, v-3]);
+        faces.push([v-4, v-1, v-2]);
+
+        // colours
+        colours.push(7+((x+y)&1)); // alternating black and white
+        colours.push(7+((x+y)&1));
+      }
     }
   }
 
