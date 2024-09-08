@@ -159,3 +159,5 @@ Add state machine to navigate through game states.
 Added level offset 3D values such that level will be centered on 0,0,0.
 
 Playing about with rotating level depending on player position, so it feels like a ball in a maze.
+
+Added code to handle block and button tiles.
