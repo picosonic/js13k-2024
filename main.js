@@ -86,6 +86,7 @@ var gs={
   state:STATEINPLAY,
   levelnum:0,
   level:null,
+  blocks:[],
   floorscale:6,
   timeout:-1,
   timeoutfired:false,
@@ -229,6 +230,28 @@ function movestep()
   }
 }
 
+// See if this blocker is still blocked
+function checkblockers(x, y)
+{
+  for (blocker of gs.blocks)
+    if ((blocker.x==x) && (blocker.y==y))
+      return blocker.blocked;
+
+  return true;
+}
+
+// Unblock all the blocked tiles
+function unblock()
+{
+  for (blocker of gs.blocks)
+  {
+    delete gs.models[blocker.id].c;
+    gs.models[blocker.id].p[1]=0;
+  }
+
+  gs.blocks=[];
+}
+
 // Determine if the player can move in a given direction
 function canmove(direction)
 {
@@ -287,6 +310,14 @@ function canmove(direction)
 
         loadlevel();
         return false;
+        break;
+
+      case TILEBLOCK:
+        return checkblockers(tx, ty);
+        break;
+
+      case TILEBUTTON:
+        unblock();
         break;
 
       default:
@@ -512,6 +543,7 @@ function loadlevel()
 {
   // Copy level data so it can be changed
   gs.level=JSON.parse(JSON.stringify(levels[gs.levelnum]));
+  gs.blocks=[];
 
   gs.offsx=0-(((gs.level.width-1)*gs.floorscale)/2);
   gs.offsy=0;
@@ -557,6 +589,13 @@ function loadlevel()
           break;
 
         case 4: // block
+          {
+            var blocker={x:x, y:y, id:gs.models.length};
+            gs.blocks.push(blocker);
+          }
+          piece.blocked=true;
+          piece.p[1]-=0.5;
+          piece.c=[0, 0, 0];
           piece.m=checkerboard(gs.floorscale);
           break;
 
