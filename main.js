@@ -5,6 +5,12 @@ const xmax=640;
 const ymax=360;
 const PIOVER180=(Math.PI/180);
 
+const STATEATTRACT=0;
+const STATEMENU=1;
+const STATEINPLAY=2;
+const STATEENDLEVEL=3;
+const STATEENGGAME=4;
+
 const KEYNONE=0;
 const KEYLEFT=1;
 const KEYUP=2;
@@ -77,11 +83,15 @@ var gs={
   tr:[0, 0, 0], // Target [pitch, yaw, roll] rotation
 
   // Current level data
+  state:STATEINPLAY,
   levelnum:0,
   level:null,
   floorscale:6,
   timeout:-1,
   timeoutfired:false,
+  offsx:0, // Offsets in 3D space to make level centered around 0,0
+  offsy:0,
+  offsz:0,
 
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[
@@ -253,8 +263,8 @@ function canmove(direction)
   try
   {
     // Calculate target position
-    var tx=Math.floor((gs.models[gs.player].p[0]+moveamount+(dx*moveamount))/gs.floorscale); // From X position
-    var ty=Math.floor((gs.models[gs.player].p[2]+moveamount+(dy*moveamount))/gs.floorscale); // From Z position
+    var tx=Math.floor((gs.models[gs.player].p[0]-gs.offsx+moveamount+(dx*moveamount))/gs.floorscale); // From X position
+    var ty=Math.floor((gs.models[gs.player].p[2]-gs.offsz+moveamount+(dy*moveamount))/gs.floorscale); // From Z position
 
     // Check for trying to go off map
     if ((tx<0) || (tx>=gs.level.width))
@@ -269,6 +279,8 @@ function canmove(direction)
     switch (tile)
     {
       case TILEEND:
+        gs.state=STATEENDLEVEL;
+
         gs.levelnum++;
         if (gs.levelnum>levels.length)
           gs.levelnum=0;
@@ -360,7 +372,14 @@ function update()
       }
     }
 
-    if (gs.moving!=KEYNONE) movestep();
+    if (gs.moving!=KEYNONE)
+    {
+      movestep();
+
+      // Rotate depending on position
+      //gs.scene.c.r[2]=360-gs.models[gs.player].p[0]; // X - roll
+      //gs.scene.c.r[0]=360-gs.models[gs.player].p[2]; // Z - pitch
+    }
   }
   else
   {
@@ -494,8 +513,14 @@ function loadlevel()
   // Copy level data so it can be changed
   gs.level=JSON.parse(JSON.stringify(levels[gs.levelnum]));
 
+  gs.offsx=0-(((gs.level.width-1)*gs.floorscale)/2);
+  gs.offsy=0;
+  gs.offsz=0-(((gs.level.height-1)*gs.floorscale)/2);
+
   // Clear old 3D models
-  gs.models=[];
+  gs.models=[
+    {m: loadmodel("chipcube"), s: 0.1, p: [0, 0, 0], r: [0, 0, 0], c: [0.5, 0.5, 0.5]}
+  ];
 
   // Convert to 3D models
   for (var y=0; y<gs.level.height; y++)
@@ -504,7 +529,7 @@ function loadlevel()
     {
       var piece={
         s: 1,
-        p: [(x*gs.floorscale), 0, (y*gs.floorscale)],
+        p: [gs.offsx+(x*gs.floorscale), gs.offsy+0, gs.offsz+(y*gs.floorscale)],
         r: [90, 0, 0]
       };
 
@@ -525,7 +550,7 @@ function loadlevel()
 
         case 3: // start
           gs.player=gs.models.length;
-          gs.models.push({m: loadmodel("coriolis"), s: 1, p: [(x*gs.floorscale), 0, (y*gs.floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
+          gs.models.push({m: loadmodel("coriolis"), s: 1, p: [gs.offsx+(x*gs.floorscale), gs.offsy+0, gs.offsz+(y*gs.floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
 
           piece.c=[0, 1, 0];
           piece.m=checkerboard(gs.floorscale);
@@ -553,6 +578,7 @@ function loadlevel()
     }
   }
 
+  gs.state=STATEINPLAY;
   starttimer(13);
 }
 
