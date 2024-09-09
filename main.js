@@ -54,7 +54,7 @@ var gs={
     // Camera position and rotation
     c:
     {
-      p: [3, -5, -20], // [x, y, z]
+      p: [0, -5, -20], // [x, y, z]
       r: [20, 10, 0]   // [pitch, yaw, roll]
     },
     
@@ -303,12 +303,12 @@ function checkblockers(x, y)
 }
 
 // Unblock all the blocked tiles
-function unblock()
+function unblock(x, y)
 {
   for (const blocker of gs.blocks)
   {
-    delete gs.models[blocker.id].c;
-    gs.models[blocker.id].p[1]=0;
+    delete gs.models[blocker.id].c; // Remove colouring
+    gs.models[blocker.id].p[1]=0; // Move tile up to level
   }
 
   gs.blocks=[];
@@ -379,7 +379,7 @@ function canmove(direction)
         break;
 
       case TILEBUTTON:
-        unblock();
+        unblock(tx, ty);
         break;
 
       default:
@@ -473,6 +473,19 @@ function update()
       //gs.scene.c.r[2]=360-gs.models[gs.player].p[0]; // X - roll
       //gs.scene.c.r[0]=360-gs.models[gs.player].p[2]; // Z - pitch
     }
+
+    // Move camera to get player in view
+    if ((0-gs.models[gs.player].p[0])>gs.scene.c.p[0]) // look right
+      gs.scene.c.p[0]+=0.2;
+
+    if ((0-gs.models[gs.player].p[0])<gs.scene.c.p[0]) // look left
+      gs.scene.c.p[0]-=0.2;
+
+    if ((0-gs.models[gs.player].p[2]-15)>gs.scene.c.p[2]) // look forwards
+      gs.scene.c.p[2]+=0.2;
+
+    if ((0-gs.models[gs.player].p[2]-15)<gs.scene.c.p[2]) // look back
+      gs.scene.c.p[2]-=0.2;
   }
   else
   {
@@ -665,7 +678,7 @@ function loadlevel()
           }
           piece.blocked=true;
           piece.p[1]-=0.5;
-          piece.c=[0, 0, 0];
+          piece.c=[0.2, 0.2, 0.2];
           piece.m=checkerboard(gs.floorscale);
           break;
 
@@ -686,6 +699,10 @@ function loadlevel()
       gs.models.push(piece);
     }
   }
+
+  // Place camera at start position
+  gs.scene.c.p[0]=0-gs.models[gs.player].p[0];
+  gs.scene.c.p[2]=0-gs.models[gs.player].p[2]-15;
 
   gs.state=STATEINPLAY;
   starttimer(13);
