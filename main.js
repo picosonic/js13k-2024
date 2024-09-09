@@ -107,6 +107,9 @@ var gs={
   // Player
   player:0, // which model is the player
 
+  // Particles
+  particles:[], // an array of particles
+
   // True when music has been started (by user interaction)
   music:false,
 
@@ -544,6 +547,7 @@ function loadlevel()
   // Copy level data so it can be changed
   gs.level=JSON.parse(JSON.stringify(levels[gs.levelnum]));
   gs.blocks=[];
+  gs.particles=[];
 
   gs.offsx=0-(((gs.level.width-1)*gs.floorscale)/2);
   gs.offsy=0;
