@@ -233,7 +233,7 @@ function movestep()
 // See if this blocker is still blocked
 function checkblockers(x, y)
 {
-  for (blocker of gs.blocks)
+  for (const blocker of gs.blocks)
     if ((blocker.x==x) && (blocker.y==y))
       return blocker.blocked;
 
@@ -243,7 +243,7 @@ function checkblockers(x, y)
 // Unblock all the blocked tiles
 function unblock()
 {
-  for (blocker of gs.blocks)
+  for (const blocker of gs.blocks)
   {
     delete gs.models[blocker.id].c;
     gs.models[blocker.id].p[1]=0;
