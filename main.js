@@ -163,6 +163,65 @@ function tween(obj, percent)
   obj.r[1]+=0.4;
 }
 
+// Random number generator
+function rng()
+{
+  return Math.random();
+}
+
+// Generate some particles around an origin
+function generateparticles(cx, cy, cz, count, rgb)
+{
+  const mv=0.1; // max travel velocity in any direction
+
+  for (var i=0; i<count; i++)
+  {
+    gs.particles.push(
+    {
+      m:cube(),
+      s:rng()*0.3,
+      p:[cx, cy, cz],
+      r:[0, 0, 0],
+      c:[rgb.r||(rng()*1), rgb.g||(rng()*1), rgb.b||(rng()*1)],
+
+      t:[(rng()*mv)-(mv/2), (rng()*mv)-(mv/2), (rng()*mv)-(mv/2)],
+      a:2
+    });
+  }
+}
+
+// Do processing for particles
+function particlestep()
+{
+  var i=0;
+
+  // Process particles
+  for (i=0; i<gs.particles.length; i++)
+  {
+    // Move particle
+    gs.particles[i].p[0]+=gs.particles[i].t[0];
+    gs.particles[i].p[1]+=gs.particles[i].t[1];
+    gs.particles[i].p[2]+=gs.particles[i].t[2];
+
+    // Rotate particle
+    gs.particles[i].r[0]+=rng()*5;
+    gs.particles[i].r[1]+=rng()*5;
+    gs.particles[i].r[2]+=rng()*5;
+
+    // Decay particle
+    gs.particles[i].a-=0.007;
+    gs.particles[i].s=Math.abs(gs.particles[i].s-0.001);
+  }
+
+  // Remove particles which have decayed
+  i=gs.particles.length;
+  while (i--)
+  {
+    if (gs.particles[i].a<=0)
+      gs.particles.splice(i, 1);
+  }
+}
+
 // When moving, step forwards until at target
 function movestep()
 {
@@ -443,6 +502,8 @@ function update()
       if (gs.scene.c.r[vector]>=360) gs.scene.c.r[vector]-=360;
     }
   }
+
+  particlestep();
 }
 
 // Redraw the game world
@@ -451,6 +512,9 @@ function redraw()
   gs.scene.o=[];
   for(const i of gs.models)
     gs.scene.o.push(i);
+
+  for(const p of gs.particles)
+    gs.scene.o.push(p);
 
   W.render(gs.scene, gs.gl, gs.ratio, gs.program);
 
@@ -552,6 +616,8 @@ function loadlevel()
   gs.offsx=0-(((gs.level.width-1)*gs.floorscale)/2);
   gs.offsy=0;
   gs.offsz=0-(((gs.level.height-1)*gs.floorscale)/2);
+
+  generateparticles(0, 0, 0, 30, {});
 
   // Clear old 3D models
   gs.models=[
