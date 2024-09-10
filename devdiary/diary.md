@@ -161,3 +161,13 @@ Added level offset 3D values such that level will be centered on 0,0,0.
 Playing about with rotating level depending on player position, so it feels like a ball in a maze.
 
 Added code to handle block and button tiles.
+
+9th September
+-------------
+Added game to the js13k WIP submission page.
+
+Added 3D particle system using mini chip-cubes.
+
+Made one of the levels more complicated to see what it was like.
+
+Made the camera follow the player with a slight lag.
