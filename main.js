@@ -139,8 +139,8 @@ function playfieldsize()
     top=Math.floor((window.innerHeight/2)-(height/2));
   }
 
-  gs.deadzoneX=window.innerWidth/10;
-  gs.deadzoneY=window.innerHeight/10;
+  gs.deadzoneX=window.innerWidth/20;
+  gs.deadzoneY=window.innerHeight/20;
 
   gs.scale=(height/ymax);
 
@@ -282,13 +282,6 @@ function movestep()
 
     // Allow another movement input
     gs.moving=KEYNONE;
-
-    // If pointer in use, stop movement
-    if (gs.touch)
-    {
-      gs.keystate=KEYNONE;
-      gs.touch=false;
-    }
   }
 }
 
@@ -857,6 +850,13 @@ function init()
       gs.music=true;
       music_play();
     }
+  };
+
+  gs.osd.onmousemove=function(e)
+  {
+    e = e || window.event;
+    if (gs.touch)
+      pointerpos(e, 1);
   };
 
   gs.osd.onmouseup=function(e)

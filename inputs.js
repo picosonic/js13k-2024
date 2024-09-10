@@ -93,6 +93,33 @@ function updatekeystate(e, dir)
 // Mouse
 ///////////
 
+// See if movement constitutes mapping to movement
+function mouseprocess(mx, my)
+{
+  var deltax=mx-gs.cursorx;
+  var deltay=my-gs.cursory;
+
+  gs.keystate=KEYNONE;
+
+  // Horizontal
+  if (Math.abs(deltax)>=gs.deadzoneX)
+  {
+    if (deltax>0)
+      gs.keystate|=KEYRIGHT;
+    else
+      gs.keystate|=KEYLEFT;
+  }
+
+  // Vertical
+  if (Math.abs(deltay)>=gs.deadzoneY)
+  {
+    if (deltay>0)
+      gs.keystate|=KEYDOWN;
+    else
+      gs.keystate|=KEYUP;
+  }
+}
+
 // Move the pointer position
 function pointerpos(e, dir)
 {
@@ -108,48 +135,17 @@ function pointerpos(e, dir)
 
       gs.touch=true;
     }
+    else
+    {
+      // Movement whilst being held down
+      mouseprocess(e.clientX, e.clientY);
+    }
   }
   else
   {
-    // Release - calculate deltas
-    var deltax=e.clientX-gs.cursorx;
-    var deltay=e.clientY-gs.cursory;
-
+    // Release
+    gs.touch=false;
     gs.keystate=KEYNONE;
-
-    // Make sure we were in a pressed state already
-    if (!gs.touch)
-      return;
-
-    // Work out which axis had the most movement
-    if (Math.abs(deltax)>Math.abs(deltay))
-    {
-      // Horizontal
-      if (Math.abs(deltax)<gs.deadzoneX)
-      {
-        gs.touch=false;
-        return;
-      }
-
-      if (deltax>0)
-        gs.keystate|=KEYRIGHT;
-      else
-        gs.keystate|=KEYLEFT;
-    }
-    else
-    {
-      // Vertical
-      if (Math.abs(deltay)<gs.deadzoneY)
-      {
-        gs.touch=false;
-        return;
-      }
-
-      if (deltay>0)
-        gs.keystate|=KEYDOWN;
-      else
-        gs.keystate|=KEYUP;
-    }
   }
 }
 
