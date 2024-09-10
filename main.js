@@ -877,6 +877,13 @@ function init()
     }
   });
 
+  gs.osd.addEventListener("touchmove", function(e)
+  {
+    e = e || window.event;
+    if (gs.touch)
+      touchpos(e, 1);
+  });
+
   gs.osd.addEventListener("touchend", function(e)
   {
     e = e || window.event;
