@@ -171,3 +171,7 @@ Added 3D particle system using mini chip-cubes.
 Made one of the levels more complicated to see what it was like.
 
 Made the camera follow the player with a slight lag.
+
+10th September
+--------------
+Improved mouse/touch controls. Now acts a bit like a virtual joystick centered on the initial press. This means long movements and diagonal movements are possible when either or both axes are outside of the deadzone.
