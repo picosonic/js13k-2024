@@ -94,6 +94,7 @@ var gs={
   offsx:0, // Offsets in 3D space to make level centered around 0,0
   offsy:0,
   offsz:0,
+  angle:0,
 
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[
@@ -180,6 +181,8 @@ function calcHypotenuse(a, b)
 function generateparticles(cx, cy, cz, count, rgb)
 {
   const mv=0.1; // max travel velocity in any direction
+
+  if (gs.particles.length>100) return;
 
   for (var i=0; i<count; i++)
   {
@@ -381,12 +384,17 @@ function canmove(direction)
     {
       case TILEEND:
         gs.state=STATEENDLEVEL;
+        gs.timeout=-1; // Stop the timer
 
         gs.levelnum++;
-        if (gs.levelnum>levels.length)
-          gs.levelnum=0;
+        if (gs.levelnum>=levels.length)
+        {
+          gs.state=STATEENGGAME;
+        }
 
-        loadlevel();
+        generateparticles(gs.models[gs.player].p[0], gs.models[gs.player].p[1], gs.models[gs.player].p[2], 60, {});
+
+        gs.timeline.reset().add(5*1000, loadlevel).begin(1);
         return false;
         break;
 
@@ -483,6 +491,9 @@ function update()
 
     if (gs.moving!=KEYNONE)
     {
+      if (gs.timeout==-1)
+        starttimer(13);
+
       movestep();
 
       // Rotate depending on position
@@ -556,6 +567,8 @@ function redrawosd()
 {
   gs.ctx.clearRect(0, 0, gs.osd.width, gs.osd.height);
 
+  if (gs.timeout==-1) return;
+
   // Put up the remaining time
   var delta=Math.round((gs.timeout-Date.now())/1000);
 
@@ -563,11 +576,29 @@ function redrawosd()
   {
     // TODO : do something when timer runs out
     gs.timeoutfired=true;
+    gs.timeout=-1;
   }
 
   if (delta<0) delta=0;
 
   write(gs.ctx, 10, 10, ""+delta+"s", 8, "rgba(255,0,255,0.5)");
+}
+
+// Rotate camera around
+function endlevelupdate()
+{
+  const radius=2;
+
+  gs.scene.c.p=[
+    0-gs.models[gs.player].p[0]+radius*Math.cos(gs.angle),
+    -8+Math.sin(gs.angle),
+    0-gs.models[gs.player].p[2]-4+radius*Math.sin(gs.angle)];
+
+  gs.scene.c.r=[60, Math.cos(gs.angle)*10, 0];
+
+  gs.angle=(gs.angle+0.025);
+
+  particlestep();
 }
 
 function rafcallback(timestamp)
@@ -595,7 +626,30 @@ function rafcallback(timestamp)
     // Process "steps" since last call
     while (gs.acc>gs.step)
     {
-      update();
+      switch (gs.state)
+      {
+        case STATEATTRACT:
+          break;
+
+        case STATEMENU:
+          break;
+
+        case STATEINPLAY:
+          update();
+          break;
+
+        case STATEENDLEVEL:
+          endlevelupdate();
+          break;
+
+        case STATEENGGAME:
+          particlestep();
+          break;
+        
+        default:
+          break;
+      }
+
       gs.acc-=gs.step;
     }
 
@@ -642,12 +696,12 @@ function loadlevel()
   gs.blocks=[];
   gs.buttons=[];
   gs.particles=[];
+  gs.timeout=-1;
+  gs.timeoutfired=false;
 
   gs.offsx=0-(((gs.level.width-1)*gs.floorscale)/2);
   gs.offsy=0;
   gs.offsz=0-(((gs.level.height-1)*gs.floorscale)/2);
-
-  generateparticles(0, 0, 0, 30, {});
 
   // Clear old 3D models
   gs.models=[
@@ -683,7 +737,6 @@ function loadlevel()
           gs.player=gs.models.length;
           gs.models.push({m: loadmodel("coriolis"), s: 1, p: [gs.offsx+(x*gs.floorscale), gs.offsy+0, gs.offsz+(y*gs.floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
 
-          piece.c=[0, 1, 0];
           piece.m=checkerboard(gs.floorscale);
           break;
 
@@ -720,11 +773,13 @@ function loadlevel()
   }
 
   // Place camera at start position
+  gs.scene.c.p=[0, -5, -20];
+  gs.scene.c.r=[20, 10, 0];
+
   gs.scene.c.p[0]=0-gs.models[gs.player].p[0];
   gs.scene.c.p[2]=0-gs.models[gs.player].p[2]-15;
 
   gs.state=STATEINPLAY;
-  starttimer(13);
 }
 
 // Load and generate 3D models
