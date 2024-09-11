@@ -177,3 +177,21 @@ Made the camera follow the player with a slight lag.
 Improved mouse/touch controls. Now acts a bit like a virtual joystick centered on the initial press. This means long movements and diagonal movements are possible when either or both axes are outside of the deadzone.
 
 Changed button logic to only unblock the closest blocker tile.
+
+11th September
+--------------
+Added trees to decorate the end of level tile.
+
+Limit total number of particles.
+
+Start timer when player first moves. Stop timer when it runs out or the current level is completed.
+
+Transition to end of game state when all levels completed.
+
+Added end of level animation.
+
+OSD text as to what's going on.
+
+Added failure state when you don't get to the forest within 13 seconds.
+
+Reset timer when rolling onto timer tile.
