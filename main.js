@@ -105,8 +105,11 @@ var gs={
     //{m: cube(), s: 1, p: [-7, 0, 0], r: [0, 0, 0]},
   ],
 
-  // Player
+  // Player and NPC
   player:0, // which model is the player
+  startx:0, // where did the player start on the 2D map
+  starty:0,
+  npc:-1, // and the NPC model
 
   // Particles
   particles:[], // an array of particles
@@ -335,6 +338,21 @@ function unblock(x, y)
 function moreparticles()
 {
   generateparticles(gs.models[gs.player].p[0], gs.models[gs.player].p[1], gs.models[gs.player].p[2], 60, {});
+}
+
+// Determine if the player has collided with an NPC
+function collide()
+{
+  if (gs.npc!=-1)
+  {
+    var xdelta=Math.abs(gs.models[gs.player].p[0]-gs.models[gs.npc].p[0]);
+    var ydelta=Math.abs(gs.models[gs.player].p[2]-gs.models[gs.npc].p[2]);
+
+    if ((xdelta<gs.floorscale/4) && (ydelta<gs.floorscale/4))
+      return true;
+  }
+
+  return false;
 }
 
 // Determine if the player can move in a given direction
@@ -697,7 +715,22 @@ function rafcallback(timestamp)
 
         case STATEINPLAY:
           if (gs.models[gs.player].p[1]<=(gs.offsy))
+          {
             update();
+
+            // Check for collision with NPC
+            if (collide())
+            {
+              gs.models[gs.npc].c=[0.5, 1, 0.5];
+
+              // Send player back to the start point
+              gs.tp=[0, 0, 0];
+              gs.tr=[0, 0, 0];
+              gs.moving=KEYNONE;
+              gs.models[gs.player].p=[gs.offsx+(gs.startx*gs.floorscale), gs.offsy, gs.offsz+(gs.starty*gs.floorscale)];
+              starttimer(13);
+            }
+          }
           break;
 
         case STATEENDLEVEL:
@@ -772,15 +805,17 @@ function loadlevel()
   gs.timeoutfired=false;
   gs.touch=false;
   gs.keystate=KEYNONE;
+  gs.npc=-1;
+  gs.tp=[0, 0, 0];
+  gs.tr=[0, 0, 0];
+  gs.moving=KEYNONE;
 
   gs.offsx=0-(((gs.level.width-1)*gs.floorscale)/2);
   gs.offsy=0;
   gs.offsz=0-(((gs.level.height-1)*gs.floorscale)/2);
 
   // Clear old 3D models
-  gs.models=[
-    {m: loadmodel("chipcube"), s: 0.1, p: [0, 0, 0], r: [0, 0, 0], c: [0.5, 0.5, 0.5]}
-  ];
+  gs.models=[];
 
   // Convert to 3D models
   for (var y=0; y<gs.level.height; y++)
@@ -810,6 +845,7 @@ function loadlevel()
         case 3: // start
           gs.player=gs.models.length;
           gs.models.push({m: loadmodel("coriolis"), s: 1, p: [gs.offsx+(x*gs.floorscale), gs.offsy+30, gs.offsz+(y*gs.floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
+          gs.startx=x; gs.starty=y;
 
           piece.m=checkerboard(gs.floorscale);
           break;
@@ -833,7 +869,14 @@ function loadlevel()
           piece.m=checkerboard(gs.floorscale);
           break;
 
-        case 6: // count
+        case 6: // count (time reset)
+          piece.m=checkerboard(gs.floorscale);
+          break;
+
+        case 7: // NPC spawn
+          gs.npc=gs.models.length;
+          gs.models.push({m: loadmodel("chipcube"), s:0.1, p: [gs.offsx+(x*gs.floorscale), gs.offsy, gs.offsz+(y*gs.floorscale)], r: [0, 0, 0], c: [0.5, 0.5, 0.5]});
+
           piece.m=checkerboard(gs.floorscale);
           break;
 
