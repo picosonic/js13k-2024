@@ -390,6 +390,10 @@ function canmove(direction)
         gs.state=STATEENDLEVEL;
         gs.timeout=-1; // Stop the timer
 
+        // Place us in the "middle" of the forest
+        gs.models[gs.player].p[0]=((tx)*gs.floorscale)+gs.offsx;
+        gs.models[gs.player].p[2]=((ty)*gs.floorscale)+gs.offsz;
+
         gs.levelnum++;
         if (gs.levelnum>=levels.length)
         {
@@ -650,6 +654,10 @@ function endlevelupdate()
     0-gs.models[gs.player].p[2]-4+radius*Math.sin(gs.angle)];
 
   gs.scene.c.r=[60, Math.cos(gs.angle)*10, 0];
+
+  gs.models[gs.player].r[1]+=4;
+  gs.models[gs.player].r[0]+=4;
+  gs.models[gs.player].p[1]=1+(Math.sin(gs.angle));
 
   gs.angle=(gs.angle+0.025);
 
