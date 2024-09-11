@@ -207,3 +207,7 @@ Put player in the middle of the forest and animate them on completion.
 Added NPC character tile, with collision detection that sends the player back to the start point.
 
 Fixed an issue when time runs out and you're mid-move.
+
+Added some story line and controls to the into page.
+
+Added animating stealth plane.
