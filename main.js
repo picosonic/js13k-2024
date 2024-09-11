@@ -616,13 +616,16 @@ function redrawosd()
         break;
 
       case STATEINPLAY:
-        if (gs.levelnum==0)
+        if (gs.models[gs.player].p[1]<=gs.offsy) // wait until we're on the ground
         {
-          write(gs.ctx, 20, 20, "Cursors or WASD to roll", 4, "rgba(255,128,0,0.7)");
-          write(gs.ctx, 120, 300, "GET TO THE FOREST IN 13 SECONDS", 4, "rgba(255,128,0,0.7)");
+          if (gs.levelnum==0)
+          {
+            write(gs.ctx, 20, 20, "Cursors or WASD to roll", 4, "rgba(255,128,0,0.7)");
+            write(gs.ctx, 120, 300, "GET TO THE FOREST IN 13 SECONDS", 4, "rgba(255,128,0,0.7)");
+          }
+          else
+            write(gs.ctx, 20, 20, "GO when you're ready", 4, "rgba(255,128,0,0.7)");
         }
-        else
-          write(gs.ctx, 20, 20, "GO when you're ready", 4, "rgba(255,128,0,0.7)");    
         break;
 
       case STATEENDGAME:
