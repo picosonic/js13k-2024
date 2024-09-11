@@ -87,6 +87,7 @@ var gs={
   levelnum:0,
   level:null,
   blocks:[],
+  buttons:[],
   floorscale:6,
   timeout:-1,
   timeoutfired:false,
@@ -167,6 +168,12 @@ function tween(obj, percent)
 function rng()
 {
   return Math.random();
+}
+
+// Determine distance (Hypotenuse) between two lengths in 2D space (using Pythagoras)
+function calcHypotenuse(a, b)
+{
+  return(Math.sqrt((a * a) + (b * b)));
 }
 
 // Generate some particles around an origin
@@ -295,16 +302,32 @@ function checkblockers(x, y)
   return true;
 }
 
-// Unblock all the blocked tiles
+// Unblock nearest blocker tile
 function unblock(x, y)
 {
-  for (const blocker of gs.blocks)
+  var nearid=null;
+  var neardist=null;
+
+  for (var blocker=0; blocker<gs.blocks.length; blocker++)
   {
-    delete gs.models[blocker.id].c; // Remove colouring
-    gs.models[blocker.id].p[1]=0; // Move tile up to level
+    var mydist=calcHypotenuse(Math.abs(x-gs.blocks[blocker].x), Math.abs(y-gs.blocks[blocker].y));
+    if ((nearid==null) || (mydist<neardist))
+    {
+      nearid=blocker;
+      neardist=mydist;
+    }
   }
 
-  gs.blocks=[];
+  try
+  {
+    if (nearid!=null)
+    {
+      delete gs.models[gs.blocks[nearid].id].c; // Remove colouring
+      gs.models[gs.blocks[nearid].id].p[1]=0; // Move tile up to level
+      gs.blocks[nearid].blocked=false;
+    }
+  }
+  catch(e){}
 }
 
 // Determine if the player can move in a given direction
@@ -368,7 +391,7 @@ function canmove(direction)
         break;
 
       case TILEBLOCK:
-        return checkblockers(tx, ty);
+        return !checkblockers(tx, ty);
         break;
 
       case TILEBUTTON:
@@ -617,6 +640,7 @@ function loadlevel()
   // Copy level data so it can be changed
   gs.level=JSON.parse(JSON.stringify(levels[gs.levelnum]));
   gs.blocks=[];
+  gs.buttons=[];
   gs.particles=[];
 
   gs.offsx=0-(((gs.level.width-1)*gs.floorscale)/2);
@@ -666,16 +690,19 @@ function loadlevel()
 
         case 4: // block
           {
-            var blocker={x:x, y:y, id:gs.models.length};
+            var blocker={x:x, y:y, id:gs.models.length, blocked:true};
             gs.blocks.push(blocker);
           }
-          piece.blocked=true;
           piece.p[1]-=0.5;
           piece.c=[0.2, 0.2, 0.2];
           piece.m=checkerboard(gs.floorscale);
           break;
 
         case 5: // button
+          {
+            var button={x:x, y:y, id:gs.models.length};
+            gs.buttons.push(button);
+          }
           piece.c=[1, 0, 1];
           piece.m=checkerboard(gs.floorscale);
           break;
