@@ -5,11 +5,10 @@ const xmax=640;
 const ymax=360;
 const PIOVER180=(Math.PI/180);
 
-const STATEATTRACT=0;
-const STATEMENU=1;
-const STATEINPLAY=2;
+const STATEINPLAY=1;
+const STATEFAILED=2;
 const STATEENDLEVEL=3;
-const STATEENGGAME=4;
+const STATEENDGAME=4;
 
 const KEYNONE=0;
 const KEYLEFT=1;
@@ -333,6 +332,11 @@ function unblock(x, y)
   catch(e){}
 }
 
+function moreparticles()
+{
+  generateparticles(gs.models[gs.player].p[0], gs.models[gs.player].p[1], gs.models[gs.player].p[2], 60, {});
+}
+
 // Determine if the player can move in a given direction
 function canmove(direction)
 {
@@ -389,12 +393,19 @@ function canmove(direction)
         gs.levelnum++;
         if (gs.levelnum>=levels.length)
         {
-          gs.state=STATEENGGAME;
+          gs.state=STATEENDGAME;
+          gs.levelnum=0;
+          gs.timeline.reset()
+            .add(13*1000, loadlevel)
+            .add(3*1000, moreparticles)
+            .add(6*1000, moreparticles)
+            .add(9*1000, moreparticles)
+            .begin(1);
         }
+        else
+          gs.timeline.reset().add(5*1000, loadlevel).begin(1);
 
         generateparticles(gs.models[gs.player].p[0], gs.models[gs.player].p[1], gs.models[gs.player].p[2], 60, {});
-
-        gs.timeline.reset().add(5*1000, loadlevel).begin(1);
         return false;
         break;
 
@@ -404,6 +415,10 @@ function canmove(direction)
 
       case TILEBUTTON:
         unblock(tx, ty);
+        break;
+
+      case TILECOUNT:
+        starttimer(13);
         break;
 
       default:
@@ -567,21 +582,58 @@ function redrawosd()
 {
   gs.ctx.clearRect(0, 0, gs.osd.width, gs.osd.height);
 
-  if (gs.timeout==-1) return;
-
-  // Put up the remaining time
-  var delta=Math.round((gs.timeout-Date.now())/1000);
-
-  if ((delta<=0) && (!gs.timeoutfired))
+  // If timer is running put up remaining time
+  if (gs.timeout!=-1)
   {
-    // TODO : do something when timer runs out
-    gs.timeoutfired=true;
-    gs.timeout=-1;
+    // Put up the remaining time
+    var delta=Math.round((gs.timeout-Date.now())/1000);
+
+    if ((delta<=0) && (!gs.timeoutfired))
+    {
+      gs.timeoutfired=true;
+      gs.timeout=-1;
+      gs.state=STATEFAILED;
+
+      gs.levelnum=0;
+      gs.timeline.reset().add(6*1000, loadlevel).begin(1);
+    }
+
+    if (delta<0) delta=0;
+
+    write(gs.ctx, 10, 10, ""+delta+"s", 8, "rgba(255,0,255,0.5)");
   }
+  else
+  {
+    switch (gs.state)
+    {
+      case STATEFAILED:
+        write(gs.ctx, 50, 50, "FAILED !", 8, "rgba(255,0,0,0.9)");
+        write(gs.ctx, 300, 280, "Please try again", 5, "rgba(255,0,0,0.9)");
+        break;
 
-  if (delta<0) delta=0;
+      case STATEENDLEVEL:
+        write(gs.ctx, 50, 50, "Level Complete !", 8, "rgba(255,128,0,0.7)");
+        break;
 
-  write(gs.ctx, 10, 10, ""+delta+"s", 8, "rgba(255,0,255,0.5)");
+      case STATEINPLAY:
+        if (gs.levelnum==0)
+        {
+          write(gs.ctx, 20, 20, "Cursors or WASD to roll", 4, "rgba(255,128,0,0.7)");
+          write(gs.ctx, 120, 300, "GET TO THE FOREST IN 13 SECONDS", 4, "rgba(255,128,0,0.7)");
+        }
+        else
+          write(gs.ctx, 20, 20, "GO when you're ready", 4, "rgba(255,128,0,0.7)");    
+        break;
+
+      case STATEENDGAME:
+        write(gs.ctx, 30, 50, "WELL DONE", 8, "rgba(255,128,0,0.7)");
+        write(gs.ctx, 20, 280, "YOU'VE COMPLETED ALL LEVELS", 5, "rgba(255,128,0,0.7)");
+        break;
+      
+      default:
+        break;
+    }
+  }
 }
 
 // Rotate camera around
@@ -628,10 +680,8 @@ function rafcallback(timestamp)
     {
       switch (gs.state)
       {
-        case STATEATTRACT:
-          break;
-
-        case STATEMENU:
+        case STATEFAILED:
+          particlestep();
           break;
 
         case STATEINPLAY:
@@ -642,8 +692,8 @@ function rafcallback(timestamp)
           endlevelupdate();
           break;
 
-        case STATEENGGAME:
-          particlestep();
+        case STATEENDGAME:
+          endlevelupdate();
           break;
         
         default:
