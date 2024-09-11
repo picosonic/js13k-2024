@@ -527,7 +527,7 @@ function update()
       gs.scene.c.p[2]+=0.2;
 
     if ((0-gs.models[gs.player].p[2]-15)<gs.scene.c.p[2]) // look back
-      gs.scene.c.p[2]-=0.2;
+      gs.scene.c.p[2]-=0.2;   
   }
   else
   {
@@ -685,7 +685,8 @@ function rafcallback(timestamp)
           break;
 
         case STATEINPLAY:
-          update();
+          if (gs.models[gs.player].p[1]<=(gs.offsy))
+            update();
           break;
 
         case STATEENDLEVEL:
@@ -711,6 +712,16 @@ function rafcallback(timestamp)
 
   // Redraw OSD
   redrawosd();
+
+  // Check camera height
+  if (gs.state==STATEINPLAY)
+  {
+    if (gs.models[gs.player].p[1]>gs.offsy)
+    {
+      gs.models[gs.player].p[1]-=1;
+      gs.scene.c.p[1]=0-gs.models[gs.player].p[1]-5;
+    }
+  }
 
   window.requestAnimationFrame(rafcallback);
 }
@@ -748,6 +759,8 @@ function loadlevel()
   gs.particles=[];
   gs.timeout=-1;
   gs.timeoutfired=false;
+  gs.touch=false;
+  gs.keystate=KEYNONE;
 
   gs.offsx=0-(((gs.level.width-1)*gs.floorscale)/2);
   gs.offsy=0;
@@ -785,7 +798,7 @@ function loadlevel()
 
         case 3: // start
           gs.player=gs.models.length;
-          gs.models.push({m: loadmodel("coriolis"), s: 1, p: [gs.offsx+(x*gs.floorscale), gs.offsy+0, gs.offsz+(y*gs.floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
+          gs.models.push({m: loadmodel("coriolis"), s: 1, p: [gs.offsx+(x*gs.floorscale), gs.offsy+30, gs.offsz+(y*gs.floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
 
           piece.m=checkerboard(gs.floorscale);
           break;
@@ -827,6 +840,7 @@ function loadlevel()
   gs.scene.c.r=[20, 10, 0];
 
   gs.scene.c.p[0]=0-gs.models[gs.player].p[0];
+  gs.scene.c.p[1]=0-gs.models[gs.player].p[1]-5;
   gs.scene.c.p[2]=0-gs.models[gs.player].p[2]-15;
 
   gs.state=STATEINPLAY;
@@ -1027,6 +1041,8 @@ function init()
       gs.music=true;
       music_play();
     }
+
+    e.preventDefault();
   };
 
   gs.osd.onmousemove=function(e)
@@ -1040,6 +1056,12 @@ function init()
   {
     e = e || window.event;
     pointerpos(e, 0);
+  };
+
+  gs.osd.onmouseout=function(e)
+  {
+    gs.touch=false;
+    gs.keystate=KEYNONE;
   };
 
   gs.osd.addEventListener("touchstart", function(e)
