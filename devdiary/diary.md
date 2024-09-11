@@ -175,3 +175,5 @@ Made the camera follow the player with a slight lag.
 10th September
 --------------
 Improved mouse/touch controls. Now acts a bit like a virtual joystick centered on the initial press. This means long movements and diagonal movements are possible when either or both axes are outside of the deadzone.
+
+Changed button logic to only unblock the closest blocker tile.
