@@ -195,3 +195,15 @@ OSD text as to what's going on.
 Added failure state when you don't get to the forest within 13 seconds.
 
 Reset timer when rolling onto timer tile.
+
+Fall "into" each level from above.
+
+Reset inputs when starting each level, and if mouse goes outside window in desktop mode.
+
+Don't put up OSD until we're on the ground.
+
+Put player in the middle of the forest and animate them on completion.
+
+Added NPC character tile, with collision detection that sends the player back to the start point.
+
+Fixed an issue when time runs out and you're mid-move.
