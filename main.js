@@ -96,20 +96,14 @@ var gs={
   angle:0,
 
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
-  models:[
-    //{m: loadmodel("chipcube"), s: 0.1, p: [0, 0, 0], r: [0, 0, 0], c: [1, 0.5, 0]},
-    //{m: loadmodel("coriolis"), s: 1, p: [-4, 0, 0], r: [0, 0, 0], c: [0, 0.5, 1]},
-    //{m: loadmodel("tree"), s: 0.3, p: [4, 0, 0], r: [0, 0, 0]},
-    //{m: checkerboard(16), s: 2, p: [0, -4, 0], r: [-90, 0, 0]},
-    //{m: loadmodel("stealth"), s: 0.005, p: [0, 4, -5], r: [0, 0, 0]},
-    //{m: cube(), s: 1, p: [-7, 0, 0], r: [0, 0, 0]},
-  ],
+  models:[],
 
   // Player and NPC
   player:0, // which model is the player
   startx:0, // where did the player start on the 2D map
   starty:0,
   npc:-1, // and the NPC model
+  stealth:-1, // and the stealth model
 
   // Particles
   particles:[], // an array of particles
@@ -418,14 +412,14 @@ function canmove(direction)
           gs.state=STATEENDGAME;
           gs.levelnum=0;
           gs.timeline.reset()
-            .add(13*1000, loadlevel)
+            .add(13*1000, createobjects)
             .add(3*1000, moreparticles)
             .add(6*1000, moreparticles)
             .add(9*1000, moreparticles)
             .begin(1);
         }
         else
-          gs.timeline.reset().add(5*1000, loadlevel).begin(1);
+          gs.timeline.reset().add(5*1000, createobjects).begin(1);
 
         generateparticles(gs.models[gs.player].p[0], gs.models[gs.player].p[1], gs.models[gs.player].p[2], 60, {});
         return false;
@@ -617,7 +611,7 @@ function redrawosd()
       gs.state=STATEFAILED;
 
       gs.levelnum=0;
-      gs.timeline.reset().add(6*1000, loadlevel).begin(1);
+      gs.timeline.reset().add(6*1000, createobjects).begin(1);
     }
 
     if (delta<0) delta=0;
@@ -843,6 +837,10 @@ function loadlevel()
           break;
 
         case 3: // start
+          gs.stealth=gs.models.length;
+          gs.models.push({m: loadmodel("stealth"), s:0.01, p: [gs.offsx+(x*gs.floorscale)+10, gs.offsy+6, gs.offsz+(y*gs.floorscale)-20], r: [270, 0, 0]});
+          gs.models[gs.stealth].ltr=1;
+
           gs.player=gs.models.length;
           gs.models.push({m: loadmodel("coriolis"), s: 1, p: [gs.offsx+(x*gs.floorscale), gs.offsy+30, gs.offsz+(y*gs.floorscale)], r: [0, 0, 0], c: [1, 0.5, 0]});
           gs.startx=x; gs.starty=y;
@@ -900,13 +898,31 @@ function loadlevel()
   gs.state=STATEINPLAY;
 }
 
+// Advance object animations onwards
+function flyby(obj, percent)
+{
+  if (obj.ltr==1)
+    obj.p[0]--;
+  else
+    obj.p[0]++;
+
+    if ((obj.p[0]<-300) || (obj.p[0]>300))
+    {
+      obj.ltr=1-obj.ltr;
+      obj.r[1]=180-obj.r[1];
+      obj.r[0]=0;
+    }
+
+  obj.r[0]++;
+}
+
 // Load and generate 3D models
 function createobjects()
 {
-  //gs.models[0].anim=new timelineobj();
-  //gs.models[0].anim.reset().add(10*1000, undefined).assoc(gs.models[5]).assoc(gs.models[4]).assoc(gs.models[0]).addcallback(tween).begin(0);
-
   loadlevel();
+
+  gs.models[gs.stealth].anim=new timelineobj();
+  gs.models[gs.stealth].anim.reset().add(10*1000, undefined).assoc(gs.models[gs.stealth]).addcallback(flyby).begin(0);
 }
 
 function checkerboard(gridsize)
