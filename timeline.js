@@ -70,7 +70,13 @@ class timelineobj
 
         // Only call function if it is defined
         if (this.timeline[i].item!=undefined)
-          this.timeline[i].item();
+        {
+          try
+          {
+            this.timeline[i].item();
+          }
+          catch(e){}
+        }
       }
 
       // Keep a count of all remaining jobs if still running
@@ -84,11 +90,19 @@ class timelineobj
       // If there's only a single undefined function on the timeline and it doesn't start at 0, then call with percentage
       if ((this.timeline.length==1) && (this.timeline[0].item==undefined) && (this.timeline[0].start>0))
         this.callbacks.forEach((callback) => {
-          this.objs.forEach((obj) => callback(obj, (delta/this.timeline[0].start)*100));
+          try
+          {
+            this.objs.forEach((obj) => callback(obj, (delta/this.timeline[0].start)*100));
+          }
+          catch(e){}
         });
       else
         this.callbacks.forEach((callback) => {
-          this.objs.forEach((obj) => callback(obj));
+          try
+          {
+            this.objs.forEach((obj) => callback(obj));
+          }
+          catch(e){}
         });
     }
 
