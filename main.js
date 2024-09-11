@@ -675,9 +675,8 @@ function loadlevel()
           piece.m=checkerboard(gs.floorscale);
           break;
 
-        case 2: // end
-          piece.c=[1, 0, 0];
-          piece.m=checkerboard(gs.floorscale);
+        case 2: // end of level
+          piece.m=endoflevel(gs.floorscale);
           break;
 
         case 3: // start
@@ -821,6 +820,52 @@ function checkerboard(gridsize)
   }
 
   return ([vertices, faces, colours]);
+}
+
+// Add a model to another
+function addmodel(cur, add, scale, offs)
+{
+  var combi=JSON.parse(JSON.stringify(cur));
+  var oldverts=combi[0].length;
+
+  // Add vertices - applying offsets
+  for (var v in add[0])
+  {
+    combi[0].push([
+      (add[0][v][0]*scale)+offs.x,
+      (add[0][v][1]*scale)+offs.y,
+      (add[0][v][2]*scale)+offs.z
+    ]);
+  }
+
+  // Add faces - with offset past existing vertices
+  for (var j in add[1])
+  {
+    combi[1].push([
+      add[1][j][0]+oldverts,
+      add[1][j][1]+oldverts,
+      add[1][j][2]+oldverts
+    ]);
+  }
+
+  // Add colours
+  combi[2]=combi[2].concat(add[2]);
+
+  return combi;
+}
+
+// Standard tile but decorated
+function endoflevel(gridsize)
+{
+  var m=checkerboard(gridsize);
+  var fine=(gridsize/2)-0.25;
+
+  m=addmodel(m, loadmodel("tree"), 0.5, {x:fine, y:fine, z:-1});
+  m=addmodel(m, loadmodel("tree"), 0.5, {x:fine, y:0-fine, z:-1});
+  m=addmodel(m, loadmodel("tree"), 0.5, {x:0-fine, y:fine, z:-1});
+  m=addmodel(m, loadmodel("tree"), 0.5, {x:0-fine, y:0-fine, z:-1});
+
+  return m;
 }
 
 // Set the timeout value to start the countdown timer
