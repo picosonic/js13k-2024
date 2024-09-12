@@ -211,3 +211,11 @@ Fixed an issue when time runs out and you're mid-move.
 Added some story line and controls to the into page.
 
 Added animating stealth plane.
+
+12th September
+--------------
+Made NPC deadly once you've touched them.
+
+Added small screenshot courtesy of Martin Johnston-Banks.
+
+Added info to README detailing some of the code and assets I've re-used from my previous JS13k entries.
