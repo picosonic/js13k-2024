@@ -42,7 +42,7 @@ then
 
   # Start new file
   echo -n "var levels=[" > "${leveljs}"
-  for file in assets/level*.tmx
+  for file in `ls assets/level*.tmx | sort -V`
   do
     echo -n "{" >> "${leveljs}"
 
