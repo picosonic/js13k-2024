@@ -49,17 +49,17 @@ var gs={
   scene:{
     // Background color [r, g, b, a]
     b: { c: [.3, .3, .7, 1] },
-    
+
     // Camera position and rotation
     c:
     {
       p: [0, -5, -20], // [x, y, z]
       r: [20, 10, 0]   // [pitch, yaw, roll]
     },
-    
+
     // Diffuse light [x, y, z] position and [r, g, b] color
     d: {p: [.5, -.3, -.7], c: [1, 1, 1]},
-    
+
     // Ambient light [r, g, b] color
     a: {c: [0.5, 0.5, 0.5]},
 
@@ -103,6 +103,7 @@ var gs={
   startx:0, // where did the player start on the 2D map
   starty:0,
   npc:-1, // and the NPC model
+  npcdeadly:false,
   stealth:-1, // and the stealth model
 
   // Particles
@@ -446,6 +447,27 @@ function canmove(direction)
   return (tile!=TILEEMPTY);
 }
 
+// When the NPC is deadly, move it towards the player
+function movenpc()
+{
+  if (gs.npcdeadly)
+  {
+    const npcspeed=0.01;
+
+    if (gs.models[gs.npc].p[0]<gs.models[gs.player].p[0])
+      gs.models[gs.npc].p[0]+=npcspeed;
+
+    if (gs.models[gs.npc].p[0]>gs.models[gs.player].p[0])
+      gs.models[gs.npc].p[0]-=npcspeed;
+
+    if (gs.models[gs.npc].p[2]<gs.models[gs.player].p[2])
+      gs.models[gs.npc].p[2]+=npcspeed;
+
+    if (gs.models[gs.npc].p[2]>gs.models[gs.player].p[2])
+      gs.models[gs.npc].p[2]-=npcspeed;
+  }
+}
+
 // Run an update step to the game state
 function update()
 {
@@ -532,6 +554,8 @@ function update()
       //gs.scene.c.r[0]=360-gs.models[gs.player].p[2]; // Z - pitch
     }
 
+    movenpc();
+
     // Move camera to get player in view
     if ((0-gs.models[gs.player].p[0])>gs.scene.c.p[0]) // look right
       gs.scene.c.p[0]+=0.2;
@@ -543,7 +567,7 @@ function update()
       gs.scene.c.p[2]+=0.2;
 
     if ((0-gs.models[gs.player].p[2]-15)<gs.scene.c.p[2]) // look back
-      gs.scene.c.p[2]-=0.2;   
+      gs.scene.c.p[2]-=0.2;
   }
   else
   {
@@ -648,7 +672,7 @@ function redrawosd()
         write(gs.ctx, 30, 50, "WELL DONE", 8, "rgba(255,128,0,0.7)");
         write(gs.ctx, 20, 280, "YOU'VE COMPLETED ALL LEVELS", 5, "rgba(255,128,0,0.7)");
         break;
-      
+
       default:
         break;
     }
@@ -722,7 +746,13 @@ function rafcallback(timestamp)
               gs.tr=[0, 0, 0];
               gs.moving=KEYNONE;
               gs.models[gs.player].p=[gs.offsx+(gs.startx*gs.floorscale), gs.offsy, gs.offsz+(gs.starty*gs.floorscale)];
-              starttimer(13);
+
+              if (gs.npcdeadly)
+                starttimer(1);
+              else
+                starttimer(13);
+
+              gs.npcdeadly=true;
             }
           }
           break;
@@ -734,7 +764,7 @@ function rafcallback(timestamp)
         case STATEENDGAME:
           endlevelupdate();
           break;
-        
+
         default:
           break;
       }
@@ -744,7 +774,7 @@ function rafcallback(timestamp)
 
     redraw();
   }
-  
+
   // Remember when we were last called
   gs.lasttime=timestamp;
 
@@ -800,6 +830,7 @@ function loadlevel()
   gs.touch=false;
   gs.keystate=KEYNONE;
   gs.npc=-1;
+  gs.npcdeadly=false;
   gs.tp=[0, 0, 0];
   gs.tr=[0, 0, 0];
   gs.moving=KEYNONE;
