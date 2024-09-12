@@ -2,19 +2,33 @@
 JS13KGames entry for 2024, theme is "**Triskaidekaphobia**".
 
 ## Rollermaze
-You play as a cuboctahedron on the run. You have only 13 seconds to get from the drop point to the safety of the woods before you're caught.
 
-Some paths are blocked and will need to be opened up using the nearest button.
+![Rollermaze](big_screenshot.png?raw=true "Rollermaze")
 
-For longer distances you'll need to find a safe spot which will reset the timer.
+You play as a **cuboctahedron** on the run. You have only **13 seconds** to get from the drop point to the safety of the woods before you're caught.
 
-Be careful of the grey sentinel cubes, if you touch them they become active and will send you back to your drop point, then chase you.
+Some paths are blocked and will need to be opened up using the _nearest button_.
+
+For longer distances you'll need to find a _safe spot_ which will reset the timer.
+
+Be careful of the **grey sentinel cubes**, if you touch them they become active and will send you back to your drop point, then chase you.
 
 Controls are :
 
 * *Keyboard* - Movement ... **Cursors** / **WASD** (or equivalently positioned keys, **ZQSD** etc) / **ZX;.**
 * *Mouse* - Movement ... **Click** then drag in a cardinal direction to roll that way.
 * *Touchscreen* - Movement ... **Touch** then drag to roll that way.
+
+# 13th edition of JS13k
+To celebrate the 13th edition of js13k games competition I decided to try to use as many assets and pieces of code from my previous few entries.
+
+* [2018 Planet Figadore Has Gone Offline](https://js13kgames.com/entries/planet-figadore-has-gone-offline) Tiled to JSON converter, Google Closure Pipeline and Build Process, 8-bit Tiny Font, Timeline Library, Input Processor, Pythagoras Calculator, RAF Callbacks
+* [2019 Backspace Return To Planet Figadore](https://js13kgames.com/entries/backspace-return-to-planet-figadore) Chipcube and Tree 3D models, 3D Navigation Code
+* [2020 Coding Golf Broken Links](https://js13kgames.com/entries/coding-golf-broken-links) Cuboctahedron 3D model, Music Player
+* [2021 Airspace Alpha Zulu](https://js13kgames.com/entries/airspace-alpha-zulu) Stealth Fighter Jet 3D model
+* [2021 Crater Space](https://js13kgames.com/entries/crater-space) Mobile Phone Code Portions, Confetti Particle System
+* [2022 Bee Kind](https://js13kgames.com/entries/bee-kind) NPC Code, Animation Code
+* [2023 Princess Of Corinium](https://js13kgames.com/entries/princess-of-corinium) Touchscreen Code
 
 # Stuff I managed to add
 
