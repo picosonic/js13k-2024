@@ -58,7 +58,7 @@ var W = {
       uniform vec3 c,d,a;
       in vec4 C,P;
       out vec4 o;
-      
+
       void main()
       {
         float n=max(dot(d,-normalize(cross(dFdx(P.xyz),dFdy(P.xyz)))),0.);
@@ -103,11 +103,11 @@ var W = {
 
     // Render each object
     for(i of scene.o)
-    {    
+    {
       // Initialize the model (cube by default)
       [vertices, faces, colours] = (i.m || cube());
 
-      // Clear for current model 
+      // Clear for current model
       allvertices=[];
       facecolours=[];
       fi=0;
@@ -120,13 +120,13 @@ var W = {
           fc=i.c;
         else
           fc=palette[colours[fi]];
-        
+
         facecolours.push(...fc.concat(1));
         facecolours.push(...fc.concat(1));
         facecolours.push(...fc.concat(1));
         fi++;
 
-        // Add vertex for each of the 3 points referenced by the face 
+        // Add vertex for each of the 3 points referenced by the face
         allvertices.push(...vertices[j[0]]);
         allvertices.push(...vertices[j[1]]);
         allvertices.push(...vertices[j[2]]);
@@ -137,7 +137,7 @@ var W = {
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allvertices), gl.STATIC_DRAW);
       gl.vertexAttribPointer(a=gl.getAttribLocation(program, 'p'), 3, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(a);
-      
+
       // Set the model matrix
       if (i.s!=undefined)
       {
@@ -148,7 +148,7 @@ var W = {
       }
       modelMatrix = new DOMMatrix().translate(...(i.p||[0,0,0])).rotate(...(i.r||[0,0,0])).scale(...scale);
       gl.uniformMatrix4fv(gl.getUniformLocation(program, 'm'), false, modelMatrix.toFloat32Array());
-      
+
       // Set the model's colors
       gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(facecolours), gl.STATIC_DRAW);
@@ -172,7 +172,7 @@ var W = {
 }
 
 // Declare a cube (2x2x2)
-// Returns [vertices, faces, colours)] 
+// Returns [vertices, faces, colours)]
 //
 //    v6----- v5
 //   /|      /|

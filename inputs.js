@@ -28,10 +28,10 @@ function updatekeystate(e, dir)
           gs.keystate|=KEYLEFT;
         else
           gs.keystate&=~KEYLEFT;
-  
+
         e.preventDefault();
         break;
-  
+
       case "ArrowUp": // cursor up
       case "KeyW": // W
       case "Semicolon": // semicolon
@@ -39,10 +39,10 @@ function updatekeystate(e, dir)
           gs.keystate|=KEYUP;
         else
           gs.keystate&=~KEYUP;
-  
+
         e.preventDefault();
         break;
-  
+
       case "ArrowRight": // cursor right
       case "KeyD": // D
       case "KeyX": // X
@@ -50,10 +50,10 @@ function updatekeystate(e, dir)
           gs.keystate|=KEYRIGHT;
         else
           gs.keystate&=~KEYRIGHT;
-  
+
         e.preventDefault();
         break;
-  
+
       case "ArrowDown": // cursor down
       case "KeyS": // S
       case "Period": // dot
@@ -61,10 +61,10 @@ function updatekeystate(e, dir)
           gs.keystate|=KEYDOWN;
         else
           gs.keystate&=~KEYDOWN;
-  
+
         e.preventDefault();
         break;
-  
+
       case "Enter": // enter
       case "ShiftLeft": // L shift
       case "ShiftRight": // R shift
@@ -73,17 +73,17 @@ function updatekeystate(e, dir)
           gs.keystate|=KEYACTION;
         else
           gs.keystate&=~KEYACTION;
-  
+
         e.preventDefault();
         break;
-  
+
       case "KeyI": // I (for info/debug)
         if (dir==1)
           gs.debug=(!gs.debug);
-  
+
         e.preventDefault();
         break;
-  
+
       default:
         break;
     }

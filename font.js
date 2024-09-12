@@ -2,7 +2,7 @@
 //   ranging from 32 " " to 126 "~"
 const font_width = 4;
 const font_height = 8;
-const font_8bit = 
+const font_8bit =
 [
 ,,,, /* SPACE */
 68,68,64,64, /* ! */
