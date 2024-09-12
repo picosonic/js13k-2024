@@ -452,7 +452,7 @@ function movenpc()
 {
   if (gs.npcdeadly)
   {
-    const npcspeed=0.01;
+    const npcspeed=0.04;
 
     if (gs.models[gs.npc].p[0]<gs.models[gs.player].p[0])
       gs.models[gs.npc].p[0]+=npcspeed;
@@ -753,6 +753,8 @@ function rafcallback(timestamp)
                 starttimer(13);
 
               gs.npcdeadly=true;
+              gs.scene.b={c:[.1, .1, .3, 1]};
+              gs.gl.clearColor(...gs.scene.b.c);
             }
           }
           break;
@@ -834,6 +836,8 @@ function loadlevel()
   gs.tp=[0, 0, 0];
   gs.tr=[0, 0, 0];
   gs.moving=KEYNONE;
+  gs.scene.b={c:[.3, .3, .7, 1]};
+  gs.gl.clearColor(...gs.scene.b.c);
 
   gs.offsx=0-(((gs.level.width-1)*gs.floorscale)/2);
   gs.offsy=0;
