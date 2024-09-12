@@ -226,4 +226,6 @@ Allow more than one sentinel.
 
 Added some levels made by Ethan and Amelie, then brought the total number of levels up to 25.
 
+Added music unlock, for when the browser doesn't think the audio context was created by a user action??!?
+
 Still only 8.6k - hmmmm :)

@@ -214,6 +214,13 @@ function music_init()
   catch (e) {}
 }
 
+function music_unlock()
+{
+  // See if it was suspended, try to resume it
+  if (music.audioCtx.state==="suspended")
+    music.audioCtx.resume();
+}
+
 function music_play()
 {
   try

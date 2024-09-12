@@ -1100,6 +1100,18 @@ function starttimer(seconds)
   gs.timeout=Date.now()+(seconds*1000);
 }
 
+// Start the music playing based on a user interaction
+function startmusic()
+{
+  if (!gs.music)
+  {
+    gs.music=true;
+    music_play();
+  }
+  else
+    music_unlock();
+}
+
 // Entry point
 function init()
 {
@@ -1109,17 +1121,15 @@ function init()
     e = e || window.event;
     updatekeystate(e, 1);
 
-    if (!gs.music)
-    {
-      gs.music=true;
-      music_play();
-    }
+    startmusic();
   };
 
   document.onkeyup=function(e)
   {
     e = e || window.event;
     updatekeystate(e, 0);
+
+    startmusic();
   };
 
   // Stop things from being dragged around
@@ -1143,11 +1153,7 @@ function init()
     e = e || window.event;
     pointerpos(e, 1);
 
-    if (!gs.music)
-    {
-      gs.music=true;
-      music_play();
-    }
+    startmusic();
 
     e.preventDefault();
   };
@@ -1163,6 +1169,8 @@ function init()
   {
     e = e || window.event;
     pointerpos(e, 0);
+
+    startmusic();
   };
 
   gs.osd.onmouseout=function(e)
@@ -1176,11 +1184,7 @@ function init()
     e = e || window.event;
     touchpos(e, 1);
 
-    if (!gs.music)
-    {
-      gs.music=true;
-      music_play();
-    }
+    startmusic();
   });
 
   gs.osd.addEventListener("touchmove", function(e)
@@ -1194,6 +1198,8 @@ function init()
   {
     e = e || window.event;
     touchpos(e, 0);
+
+    startmusic();
   });
 
   // Set up handler for browser being resized (or re-oriented)
