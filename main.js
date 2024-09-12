@@ -834,7 +834,7 @@ function loadlevel()
   gs.timeoutfired=false;
   gs.touch=false;
   gs.keystate=KEYNONE;
-  gs.npc=[];
+  gs.npcs=[];
   gs.tp=[0, 0, 0];
   gs.tr=[0, 0, 0];
   gs.moving=KEYNONE;
