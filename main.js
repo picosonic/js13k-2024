@@ -98,12 +98,11 @@ var gs={
   // Models (model, size [x, y, z], position [x, y, z], rotation [pitch, yaw, roll], color [r, g, b])
   models:[],
 
-  // Player and NPC
+  // Player and NPCs
   player:0, // which model is the player
   startx:0, // where did the player start on the 2D map
   starty:0,
-  npc:-1, // and the NPC model
-  npcdeadly:false,
+  npcs:[], // and the NPC models
   stealth:-1, // and the stealth model
 
   // Particles
@@ -338,13 +337,23 @@ function moreparticles()
 // Determine if the player has collided with an NPC
 function collide()
 {
-  if (gs.npc!=-1)
+  for (npc of gs.npcs)
   {
-    var xdelta=Math.abs(gs.models[gs.player].p[0]-gs.models[gs.npc].p[0]);
-    var ydelta=Math.abs(gs.models[gs.player].p[2]-gs.models[gs.npc].p[2]);
+    var xdelta=Math.abs(gs.models[gs.player].p[0]-gs.models[npc.id].p[0]);
+    var ydelta=Math.abs(gs.models[gs.player].p[2]-gs.models[npc.id].p[2]);
 
     if ((xdelta<gs.floorscale/4) && (ydelta<gs.floorscale/4))
+    {
+      gs.models[npc.id].c=[0.5, 1, 0.5];
+      if (npc.deadly)
+        starttimer(1);
+      else
+        starttimer(13);
+
+      npc.deadly=true;
+
       return true;
+    }
   }
 
   return false;
@@ -448,23 +457,26 @@ function canmove(direction)
 }
 
 // When the NPC is deadly, move it towards the player
-function movenpc()
+function movenpcs()
 {
-  if (gs.npcdeadly)
+  for (npc of gs.npcs)
   {
-    const npcspeed=0.04;
+    if (npc.deadly)
+      {
+        const npcspeed=0.04;
 
-    if (gs.models[gs.npc].p[0]<gs.models[gs.player].p[0])
-      gs.models[gs.npc].p[0]+=npcspeed;
+        if (gs.models[npc.id].p[0]<gs.models[gs.player].p[0])
+          gs.models[npc.id].p[0]+=npcspeed;
 
-    if (gs.models[gs.npc].p[0]>gs.models[gs.player].p[0])
-      gs.models[gs.npc].p[0]-=npcspeed;
+        if (gs.models[npc.id].p[0]>gs.models[gs.player].p[0])
+          gs.models[npc.id].p[0]-=npcspeed;
 
-    if (gs.models[gs.npc].p[2]<gs.models[gs.player].p[2])
-      gs.models[gs.npc].p[2]+=npcspeed;
+        if (gs.models[npc.id].p[2]<gs.models[gs.player].p[2])
+          gs.models[npc.id].p[2]+=npcspeed;
 
-    if (gs.models[gs.npc].p[2]>gs.models[gs.player].p[2])
-      gs.models[gs.npc].p[2]-=npcspeed;
+        if (gs.models[npc.id].p[2]>gs.models[gs.player].p[2])
+          gs.models[npc.id].p[2]-=npcspeed;
+      }
   }
 }
 
@@ -554,7 +566,7 @@ function update()
       //gs.scene.c.r[0]=360-gs.models[gs.player].p[2]; // Z - pitch
     }
 
-    movenpc();
+    movenpcs();
 
     // Move camera to get player in view
     if ((0-gs.models[gs.player].p[0])>gs.scene.c.p[0]) // look right
@@ -738,20 +750,12 @@ function rafcallback(timestamp)
             // Check for collision with NPC
             if (collide())
             {
-              gs.models[gs.npc].c=[0.5, 1, 0.5];
-
               // Send player back to the start point
               gs.tp=[0, 0, 0];
               gs.tr=[0, 0, 0];
               gs.moving=KEYNONE;
               gs.models[gs.player].p=[gs.offsx+(gs.startx*gs.floorscale), gs.offsy, gs.offsz+(gs.starty*gs.floorscale)];
 
-              if (gs.npcdeadly)
-                starttimer(1);
-              else
-                starttimer(13);
-
-              gs.npcdeadly=true;
               gs.scene.b={c:[.1, .1, .3, 1]};
               gs.gl.clearColor(...gs.scene.b.c);
             }
@@ -830,8 +834,7 @@ function loadlevel()
   gs.timeoutfired=false;
   gs.touch=false;
   gs.keystate=KEYNONE;
-  gs.npc=-1;
-  gs.npcdeadly=false;
+  gs.npc=[];
   gs.tp=[0, 0, 0];
   gs.tr=[0, 0, 0];
   gs.moving=KEYNONE;
@@ -906,7 +909,7 @@ function loadlevel()
           break;
 
         case 7: // NPC spawn
-          gs.npc=gs.models.length;
+          gs.npcs.push({id:gs.models.length, deadly:false});
           gs.models.push({m: loadmodel("chipcube"), s:0.1, p: [gs.offsx+(x*gs.floorscale), gs.offsy, gs.offsz+(y*gs.floorscale)], r: [0, 0, 0], c: [0.5, 0.5, 0.5]});
 
           piece.m=checkerboard(gs.floorscale);
