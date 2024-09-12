@@ -30,7 +30,7 @@ Looking into the [Triskaidekaphobia on Wikipedia](https://en.wikipedia.org/wiki/
 
 Padded out build environment and workflow.
 
-Did some tests with [xem's MicroW](https://xem.github.io/microW/) 3D engine.
+Did some tests with [xem's MicroW](https://xem.github.io/microW/) WebGL 3D engine.
 
 14th August
 -----------
@@ -223,3 +223,7 @@ Added info to README detailing some of the code and assets I've re-used from my 
 Added more levels as we're only at about 60% of 13k !
 
 Allow more than one sentinel.
+
+Added some levels made by Ethan and Amelie, then brought the total number of levels up to 25.
+
+Still only 8.6k - hmmmm :)
