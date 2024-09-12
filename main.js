@@ -337,7 +337,7 @@ function moreparticles()
 // Determine if the player has collided with an NPC
 function collide()
 {
-  for (npc of gs.npcs)
+  for (var npc of gs.npcs)
   {
     var xdelta=Math.abs(gs.models[gs.player].p[0]-gs.models[npc.id].p[0]);
     var ydelta=Math.abs(gs.models[gs.player].p[2]-gs.models[npc.id].p[2]);
@@ -459,7 +459,7 @@ function canmove(direction)
 // When the NPC is deadly, move it towards the player
 function movenpcs()
 {
-  for (npc of gs.npcs)
+  for (var npc of gs.npcs)
   {
     if (npc.deadly)
       {
