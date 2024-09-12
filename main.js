@@ -634,7 +634,6 @@ function redrawosd()
       gs.timeout=-1;
       gs.state=STATEFAILED;
 
-      gs.levelnum=0;
       gs.timeline.reset().add(6*1000, createobjects).begin(1);
     }
 
