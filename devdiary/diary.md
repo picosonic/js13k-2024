@@ -216,6 +216,8 @@ Added animating stealth plane.
 --------------
 Made NPC deadly once you've touched them.
 
-Added small screenshot courtesy of Martin Johnston-Banks.
+Added thumbnail and cover image courtesy of Martin Johnston-Banks.
 
 Added info to README detailing some of the code and assets I've re-used from my previous JS13k entries.
+
+Added more levels as we're only at about 60% of 13k !
