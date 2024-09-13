@@ -208,7 +208,7 @@ Added NPC character tile, with collision detection that sends the player back to
 
 Fixed an issue when time runs out and you're mid-move.
 
-Added some story line and controls to the into page.
+Added some story line and controls to the info page.
 
 Added animating stealth plane.
 

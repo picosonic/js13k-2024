@@ -23,7 +23,7 @@ Controls are :
 To celebrate the 13th edition of js13k games competition I decided to try to use as many assets and pieces of code from my previous few entries.
 
 * [2018 Planet Figadore Has Gone Offline](https://js13kgames.com/entries/planet-figadore-has-gone-offline) Tiled to JSON converter, Google Closure Pipeline and Build Process, 8-bit Tiny Font, Timeline Library, Input Processor, Pythagoras Calculator, RAF Callbacks
-* [2019 Backspace Return To Planet Figadore](https://js13kgames.com/entries/backspace-return-to-planet-figadore) Chipcube and Tree 3D models, 3D Navigation Code
+* [2019 Backspace Return To Planet Figadore](https://js13kgames.com/entries/backspace-return-to-planet-figadore) Chipcube and Tree 3D models, 3D Navigation Code, 3D maths
 * [2020 Coding Golf Broken Links](https://js13kgames.com/entries/coding-golf-broken-links) Cuboctahedron 3D model, Music Player
 * [2021 Airspace Alpha Zulu](https://js13kgames.com/entries/airspace-alpha-zulu) Stealth Fighter Jet 3D model
 * [2021 Crater Space](https://js13kgames.com/entries/crater-space) Mobile Phone Code Portions, Confetti Particle System
@@ -31,6 +31,18 @@ To celebrate the 13th edition of js13k games competition I decided to try to use
 * [2023 Princess Of Corinium](https://js13kgames.com/entries/princess-of-corinium) Touchscreen Code
 
 # Stuff I managed to add
+* WebGL renderer based on [MicroW by Xem](https://github.com/xem/microW)
+* Kind-of 3D platformer, with rolling to navigate
+* 16x9 viewport which sizes appropriately to the browser size
+* 8-bit tiny font (Repton inspired)
+* 3D animations
+* 3D particle system
+* 13 seconds per level - giving the fear of 13 element
+* Procedural 3D model generator for the checkerboard, converting 2D level map to 3D
+* Flat shaded look ([Virtua Racing](https://en.wikipedia.org/wiki/Virtua_Racing) inspired)
+* Updates to my timeline library to include associated objects and multiple callbacks
+* 3D object merging
+* Intuitive touchscreen controls, drag or swipe in a cardinal direction to roll that way
 
 # Tools used
 * [Ubuntu OS](https://www.ubuntu.com/)
@@ -46,5 +58,8 @@ To celebrate the 13th edition of js13k games competition I decided to try to use
 [Click here to play now](https://picosonic.github.io/js13k-2024/)
 
 # Attribution of assets
+Martin Johston-Banks designed the thumbnail and cover images.
+
+I had help designing some levels and play testing from Ethan and Amelie.
 
 _Using part of The Trout Quintet (D.667) by Franz Schubert (in the public domain since it was composed in 1819 - before 1924)_
