@@ -68,6 +68,8 @@ Made a cube roll around the grid when directed by user input. This was quite tri
 
 Made camera movement only linked to user input when in debug mode - press I to toggle.
 
+![Movement tests](aug17.gif?raw=true "Movement tests")
+
 17th August
 -----------
 Been staring at the WebGL code a lot and not really knowing what some parts meant. So have made small changes, refactored and added tons more comments based on a nice step-by-step [WebGL tutorial](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial).
@@ -77,6 +79,8 @@ The WebGL tutorial I found suggests that steps can be split out into init and a 
 Decided to refactor WebGL code to be closer to what I've done before in terms of 3D models, so added an "OpenGL default palette" for per-face colouring, convert vertices/faces notation into pure vertices. Also refactored the built in "cube" model, and my chequerboard function.
 
 This refactoring is also with a view towards switching from gl.drawArrays to gl.drawElements which is meant to be [more efficient](https://community.khronos.org/t/gldrawelements-vs-gldrawarrays/33306).
+
+![Stealth model](aug18.gif?raw=true "Stealth model")
 
 18th August
 -----------
@@ -91,6 +95,8 @@ Added a custom loader which can import 3D models in a JSON format that I've used
 19th August
 -----------
 Added 3D fps style movement to the camera when in debug mode. This is to allow me to look around and zoom in/out of models to see how they look from various angles.
+
+![FPS navigation](aug19.gif?raw=true "FPS navigation")
 
 20th August
 -----------
@@ -109,6 +115,8 @@ Fixed checkerboard and built-in cube face colours array length, each square has 
 Increased model rotation speed by a factor of 2, again it was just a bit slow.
 
 Process per-face colours when set in model object, but can be replaced by a whole-object colour. This was a new area for me doing shader GL code, and it's still a bit of a dark-art. Very easy to break it if you don't know what you're doing, or don't know what IN variables you can use and what for, and what OUT variables you should export.
+
+![Per face colouring](aug24.gif?raw=true "Per face colouring")
 
 24th August
 -----------
@@ -141,6 +149,8 @@ Allow checkerboards to be created of any size.
 Constrain movements to level squares by tracking the 3D model in the 2D representation of the game world and checking for edges and blocked tiles.
 
 Updated movement to allow inputs in multiple axes at once so the first available route is taken. This means you no longer need to move up to a boundary, then stop to change axis. So pressing or swiping to up/left would keep doing along the axis until hitting a blocked path then trying the other axis. Which means it's now much easier to go along zigzag paths too.
+
+![Testing level rolling](aug30.gif?raw=true "Testing level rolling")
 
 3rd September
 -------------
@@ -185,6 +195,8 @@ Added 3D particle system using mini chip-cubes. This looks quite nice, but I'm j
 Made level 3 more complicated, 7x5 compared to a 3x3 test level, to see what it was like to play.
 
 Made the camera follow the player with a slight lag.
+
+![Camera following player](aug25th.png?raw=true "Camera following player")
 
 10th September
 --------------
