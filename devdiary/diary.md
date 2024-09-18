@@ -30,7 +30,11 @@ Looking into the [Triskaidekaphobia on Wikipedia](https://en.wikipedia.org/wiki/
 
 Padded out build environment and workflow.
 
+![Intial sketches](aug16.png?raw=true "Initial sketches")
+
 Did some tests with [xem's MicroW](https://xem.github.io/microW/) WebGL 3D engine.
+
+![WebGL first render](webgl.jpg?raw=true "WebGL first render")
 
 14th August
 -----------
@@ -116,6 +120,8 @@ Added five basic levels to start off some gameplay testing, which may end up bei
 
 Changed the background from grey to a blue colour, to give it a bit of a [skybox](https://en.wikipedia.org/wiki/Skybox_(video_games)) feel.
 
+![Testing models](aug25th.png?raw=true "Testing models")
+
 28th August
 -----------
 Fixed issue with mouse/touch control when just clicking with a deadzone area so that a minimum of 10% (of the screen width or height) movement in either X or Y is required before registering as a swipe. Otherwise it was just too over sensitive.
@@ -127,6 +133,8 @@ Make a note of which model in the scene is the player model, so that it can be m
 Sped up rotation when moving, and determined that translation should be about 1/45th of the rotation to make it appear natural rotation.
 
 Allow checkerboards to be created of any size.
+
+![Testing levels](aug29th.png?raw=true "Testing levels")
 
 29th August
 -----------
