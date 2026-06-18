@@ -1202,6 +1202,10 @@ function init()
     startmusic();
   });
 
+  // Check for ability to tilt
+  if ('ondeviceorientation' in window)
+    window.addEventListener('deviceorientation', tilting);
+
   // Set up handler for browser being resized (or re-oriented)
   window.addEventListener("resize", function() { playfieldsize(); });
 
