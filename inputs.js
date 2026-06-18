@@ -168,10 +168,10 @@ function tilting(e)
   {
     gs.keystate=KEYNONE;
 
-    if (e.beta<-50)
-      gs.keystate|=LEFT;
+    if (e.beta<-45)
+      gs.keystate|=KEYLEFT;
 
-    if (e.beta>50)
+    if (e.beta>45)
       gs.keystate|=KEYRIGHT;
 
     if (e.gamma<-30)
